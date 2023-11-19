@@ -19,17 +19,15 @@ import { useChangeLanguage } from "remix-i18next";
 import iconHref from "~/components/icons/sprite.svg";
 import i18next from "~/utils/i18next.server.ts";
 
-import styles from "./tailwind.css";
+import "./tailwind.css";
 
 export const links: LinksFunction = () => [
   // Preload CSS as a resource to avoid render blocking
   { as: "image", href: iconHref, rel: "preload", type: "image/svg+xml" },
   { as: "style", href: "/fonts/poppins/font.css", rel: "preload" },
   { as: "style", href: "/fonts/roboto/font.css", rel: "preload" },
-  { as: "style", href: styles, rel: "preload" },
   { href: "/fonts/poppins/font.css", rel: "stylesheet" },
   { href: "/fonts/roboto/font.css", rel: "stylesheet" },
-  { href: styles, rel: "stylesheet" },
   { href: "/apple-touch-icon.png", rel: "apple-touch-icon", sizes: "180x180" },
   {
     href: "/favicon-32x32.png",
