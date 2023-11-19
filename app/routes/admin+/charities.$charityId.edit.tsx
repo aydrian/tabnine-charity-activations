@@ -1,4 +1,4 @@
-import { type DataFunctionArgs, Response, json } from "@remix-run/node";
+import { type DataFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { requireUserId } from "~/utils/auth.server.ts";
@@ -32,7 +32,7 @@ export default function EditCharity() {
 
   return (
     <section className="prose mx-auto grid max-w-4xl gap-12">
-      <div className="rounded border border-brand-gray-b bg-white p-8 sm:px-16">
+      <div className="border-brand-gray-b rounded border bg-white p-8 sm:px-16">
         <h2 className="m-0 font-bold text-brand-deep-purple">Edit Charity</h2>
         <CharityEditor charity={charity} />
       </div>

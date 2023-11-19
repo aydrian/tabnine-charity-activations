@@ -9,10 +9,9 @@ declare global {
 const zodEnv = z.object({
   DATABASE_URL: z.string(),
   FLY_APP_NAME: z.string().optional(),
-  OKTA_CALLBACK_URL: z.string(),
-  OKTA_CLIENT_ID: z.string(),
-  OKTA_CLIENT_SECRET: z.string(),
-  OKTA_DOMAIN: z.string(),
+  GOOGLE_CALLBACK_URL: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
   SESSION_SECRET: z.string()
 });
 

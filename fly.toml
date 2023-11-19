@@ -1,4 +1,4 @@
-app = "crl-charity-activations"
+app = "tabnine-charity-activations"
 primary_region = "iad"
 
 [http_service]

@@ -1,6 +1,6 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { Response, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -17,7 +17,7 @@ import {
 import QRCode from "qrcode";
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import { useEventSource } from "remix-utils";
+import { useEventSource } from "remix-utils/sse/react";
 
 import appConfig from "~/app.config.ts";
 import { Icon } from "~/components/icon.tsx";
@@ -29,7 +29,7 @@ import type { NewDonationEvent } from "./resources+/crl-cdc-webhook.tsx";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { slug } = params;
   const event = await prisma.event.findUnique({
     select: {

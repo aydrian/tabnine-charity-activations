@@ -1,7 +1,7 @@
 import {
   type LinksFunction,
-  type LoaderArgs,
-  type V2_MetaFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
   json
 } from "@remix-run/node";
 import {
@@ -32,7 +32,7 @@ export const links: LinksFunction = () => [
   { href: styles, rel: "stylesheet" }
 ];
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   let locale = await i18next.getLocale(request);
   return json({ locale });
 }
@@ -44,7 +44,7 @@ export let handle = {
   i18n: "common"
 };
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [{ title: "Charity Activations" }];
 };
 

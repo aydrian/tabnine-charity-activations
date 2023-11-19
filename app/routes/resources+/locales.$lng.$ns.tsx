@@ -1,8 +1,8 @@
-import { type LoaderArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 
 import { prisma } from "~/utils/db.server.ts";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
   const { lng, ns } = params;
   const result = await prisma.i18n.findMany({
     select: { key: true, translation: true },

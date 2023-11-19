@@ -1,65 +1,48 @@
-import { Authenticator /*, AuthorizationError*/ } from "remix-auth";
-// import { FormStrategy } from "remix-auth-form";
-import { OktaStrategy } from "remix-auth-okta";
+import { Authenticator } from "remix-auth";
+import { GoogleStrategy } from "remix-auth-google";
 
 import { prisma } from "~/utils/db.server.ts";
 import { sessionStorage } from "~/utils/session.server.ts";
-// import { type User } from "@prisma/client";
-// import bcrypt from "bcryptjs";
-// import { verifyLogin } from "~/models/user.server.ts";
 
 // Create an instance of the authenticator, pass a generic with what
 // strategies will return and will store in the session
 export const authenticator = new Authenticator<string>(sessionStorage);
 
-const oktaStrategy = new OktaStrategy(
+const googleStrategy = new GoogleStrategy<string>(
   {
-    callbackURL: process.env.OKTA_CALLBACK_URL,
-    clientID: process.env.OKTA_CLIENT_ID,
-    clientSecret: process.env.OKTA_CLIENT_SECRET,
-    issuer: `${process.env.OKTA_DOMAIN}/oauth2/default`
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET
   },
   async ({ accessToken, extraParams, profile, refreshToken }) => {
+    const email = profile.emails[0].value;
+    const imageUrl = profile.photos[0].value;
     const user = await prisma.user.upsert({
       create: {
-        email: profile.email,
+        email,
         firstName: profile.name.givenName,
         fullName: profile.displayName,
+        imageUrl,
         lastName: profile.name.familyName
       },
       select: {
         id: true
       },
-      update: {},
-      where: { email: profile.email }
+      update: {
+        email,
+        firstName: profile.name.givenName,
+        fullName: profile.displayName,
+        imageUrl,
+        lastName: profile.name.familyName
+      },
+      where: { email }
     });
     return user.id;
   }
 );
 
 // Tell the Authenticator to use the OKTA strategy
-authenticator.use(oktaStrategy);
-
-// TODO: Handle multiple strategies
-// Tell the Authenticator to use the form strategy
-// authenticator.use(
-//   new FormStrategy(async ({ form }) => {
-//     const email = form.get("email");
-//     const password = form.get("password");
-
-//     invariant(typeof email === "string", "email must be a string");
-//     invariant(typeof password === "string", "password must be a string");
-
-//     const user = await verifyLogin(email, password);
-//     if (!user) {
-//       throw new AuthorizationError(
-//         "Username/Password combination is incorrect"
-//       );
-//     }
-//     return user.id;
-//   }),
-//   FormStrategy.name
-// );
+authenticator.use(googleStrategy);
 
 export const requireUserId = async (
   request: Request,
@@ -74,22 +57,3 @@ export const requireUserId = async (
   });
   return userId;
 };
-
-// export async function verifyLogin(email: User["email"], password: string) {
-//   const userWithPassword = await prisma.user.findUnique({
-//     select: { id: true, passwordHash: true },
-//     where: { email }
-//   });
-
-//   if (!userWithPassword || !userWithPassword.passwordHash) {
-//     return null;
-//   }
-
-//   const isValid = await bcrypt.compare(password, userWithPassword.passwordHash);
-
-//   if (!isValid) {
-//     return null;
-//   }
-
-//   return { id: userWithPassword.id };
-// }

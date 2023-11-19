@@ -1,6 +1,6 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { Response, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -12,7 +12,7 @@ import Footer from "~/components/footer.tsx";
 import { DonationForm } from "~/routes/resources+/donate.tsx";
 import { prisma } from "~/utils/db.server.ts";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { eventId } = params;
   const event = await prisma.event.findUnique({
     select: {

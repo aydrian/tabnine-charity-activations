@@ -1,12 +1,16 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
-import { Response, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 
 import CompanyLogo from "~/components/company-logo.tsx";
 import Footer from "~/components/footer.tsx";
 import { Icon } from "~/components/icon.tsx";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from "~/components/ui/avatar.tsx";
 import { Button } from "~/components/ui/button.tsx";
 import {
   DropdownMenu,
@@ -20,7 +24,7 @@ import {
 import { requireUserId } from "~/utils/auth.server.ts";
 import { prisma } from "~/utils/db.server.ts";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
   try {
     const user = await prisma.user.findUniqueOrThrow({
@@ -29,6 +33,7 @@ export const loader = async ({ request }: LoaderArgs) => {
         firstName: true,
         fullName: true,
         id: true,
+        imageUrl: true,
         lastName: true
       },
       where: { id: userId }
@@ -63,6 +68,7 @@ export default function AdminLayout() {
                 <DropdownMenuTrigger asChild>
                   <Button className="relative h-8 w-8 rounded-full bg-brand-deep-purple">
                     <Avatar>
+                      <AvatarImage src={user.imageUrl ?? undefined} />
                       <AvatarFallback>{`${user.firstName.charAt(
                         0
                       )}${user.lastName.charAt(0)}`}</AvatarFallback>

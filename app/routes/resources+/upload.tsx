@@ -1,4 +1,4 @@
-import type { ActionArgs, UploadHandler } from "@remix-run/node";
+import type { ActionFunctionArgs, UploadHandler } from "@remix-run/node";
 
 import { json, unstable_parseMultipartFormData } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
@@ -21,7 +21,7 @@ const uploadHandler: UploadHandler = async ({
   return await new Blob(chunks, { type: contentType }).text();
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
 
   const formData = await unstable_parseMultipartFormData(

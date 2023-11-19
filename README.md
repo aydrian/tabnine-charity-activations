@@ -148,5 +148,5 @@ environment.
 
 ## 📝 License
 
-Copyright © 2023 [Cockroach Labs](https://cockroachlabs.com). <br />
+Copyright © 2023 [Tabnine](https://tabnine.com). <br />
 This project is [MIT](./LICENSE) licensed.

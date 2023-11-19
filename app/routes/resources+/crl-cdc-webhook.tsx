@@ -1,5 +1,5 @@
-import { type DataFunctionArgs, Response, json } from "@remix-run/node";
-import { eventStream } from "remix-utils";
+import { type DataFunctionArgs, json } from "@remix-run/node";
+import { eventStream } from "remix-utils/sse/server";
 
 import { getDashboardCharities } from "~/models/charity.server.ts";
 import { emitter } from "~/utils/emitter.server.ts";

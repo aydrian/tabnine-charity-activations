@@ -22,9 +22,9 @@ export default {
     maxPerEvent: 4
   },
   company: {
-    name: "CockroachDB",
-    privacyPolicyUrl: "https://www.cockroachlabs.com/privacy/",
-    twitter: "cockroachdb",
-    website: "https://www.cockroachlabs.com/"
+    name: "Tabnine",
+    privacyPolicyUrl: "https://www.tabnine.com/privacy",
+    twitter: "tabnine",
+    website: "https://www.tabnine.com/"
   }
 } satisfies AppConfig;

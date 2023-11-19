@@ -1,6 +1,6 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { Response, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 
 import { Icon } from "~/components/icon.tsx";
@@ -9,7 +9,7 @@ import { getLeads } from "~/models/leads.server.ts";
 import { requireUserId } from "~/utils/auth.server.ts";
 import { prisma } from "~/utils/db.server.ts";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const { eventId, leadId } = params;
   const event = await prisma.event.findUnique({

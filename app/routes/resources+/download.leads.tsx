@@ -1,12 +1,11 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { Response } from "@remix-run/node";
 import { stringify } from "csv-stringify/sync";
 
 import { requireUserId } from "~/utils/auth.server.ts";
 import { prisma } from "~/utils/db.server.ts";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const url = new URL(request.url);
   const eventId = url.searchParams.get("event_id");

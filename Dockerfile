@@ -41,6 +41,8 @@ RUN npm run build
 # Finally, build the production image with minimal footprint
 FROM base
 
+ENV GOOGLE_CALLBACK_URL="https://$FLY_APP_NAME.fly.dev/auth/google/callback"
+
 WORKDIR /myapp
 
 COPY --from=production-deps /myapp/node_modules /myapp/node_modules

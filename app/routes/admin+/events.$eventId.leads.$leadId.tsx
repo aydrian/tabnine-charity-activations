@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { useOutletContext } from "@remix-run/react";
 
@@ -12,7 +12,7 @@ type ContextType = {
 };
 
 // TODO: Is this needed?
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   return await requireUserId(request);
 };
 

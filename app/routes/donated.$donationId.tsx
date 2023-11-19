@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import {
@@ -14,7 +14,7 @@ import TweetButton from "~/components/tweet-button.tsx";
 import { prisma } from "~/utils/db.server.ts";
 import { processMarkdownToHtml } from "~/utils/markdown.server.ts";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { donationId } = params;
   const donation = await prisma.donation.findUnique({
     select: {

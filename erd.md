@@ -25,10 +25,10 @@ aws_us_west_2 aws-us-west-2
   "users" {
     String id "🗝️"
     String email 
-    String password_hash "❓"
     String first_name 
     String last_name 
     String full_name 
+    String image_url "❓"
     }
   
 

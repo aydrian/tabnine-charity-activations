@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -6,13 +6,12 @@ import { useLoaderData } from "@remix-run/react";
 import appConfig from "~/app.config.ts";
 import CompanyLogo from "~/components/company-logo.tsx";
 import { Icon } from "~/components/icon.tsx";
-// import { FormLoginForm } from "~/routes/auth+/form.tsx";
-import { OktaLoginForm } from "~/routes/auth+/okta+/_index.tsx";
+import { GoogleLoginForm } from "~/routes/auth+/google+/_index.tsx";
 import { authenticator } from "~/utils/auth.server.ts";
 import { redirectToCookie } from "~/utils/cookies.server.ts";
 import { commitSession, getSession } from "~/utils/session.server.ts";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticator.isAuthenticated(request, {
     successRedirect: "/admin/dashboard"
   });
@@ -70,8 +69,7 @@ export default function AdminIndex() {
             {data.loginMessage ? (
               <div className="text-sm text-red-500">{data.loginMessage}</div>
             ) : null}
-            {/* <FormLoginForm formError={data.formError} /> */}
-            <OktaLoginForm />
+            <GoogleLoginForm />
           </div>
         </section>
       </main>
