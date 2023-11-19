@@ -29,7 +29,21 @@ export const links: LinksFunction = () => [
   { as: "style", href: styles, rel: "preload" },
   { href: "/fonts/poppins/font.css", rel: "stylesheet" },
   { href: "/fonts/roboto/font.css", rel: "stylesheet" },
-  { href: styles, rel: "stylesheet" }
+  { href: styles, rel: "stylesheet" },
+  { href: "/apple-touch-icon.png", rel: "apple-touch-icon", sizes: "180x180" },
+  {
+    href: "/favicon-32x32.png",
+    rel: "icon",
+    sizes: "32x32",
+    type: "image/png"
+  },
+  {
+    href: "/favicon-16x16.png",
+    rel: "icon",
+    sizes: "16x16",
+    type: "image/png"
+  },
+  { href: "/site.webmanifest", rel: "manifest" }
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
