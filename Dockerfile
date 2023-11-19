@@ -1,5 +1,5 @@
 # base node image
-FROM node:18-bullseye-slim as base
+FROM node:18-bookworm-slim as base
 
 # set for base and all layer that inherit from it
 ENV NODE_ENV production
@@ -12,7 +12,7 @@ FROM base as deps
 
 WORKDIR /myapp
 
-ADD package*.json ./
+ADD package*.json .npmrc ./
 RUN npm install --include=dev
 
 # Setup production node_modules
@@ -41,7 +41,8 @@ RUN npm run build
 # Finally, build the production image with minimal footprint
 FROM base
 
-ENV GOOGLE_CALLBACK_URL="https://$FLY_APP_NAME.fly.dev/auth/google/callback"
+ENV GOOGLE_CALLBACK_URL="https://tabnine-charity-activations.fly.dev/auth/google/callback"
+ENV NODE_ENV="production"
 
 WORKDIR /myapp
 
