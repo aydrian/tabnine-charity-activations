@@ -41,7 +41,7 @@ RUN npm run build
 # Finally, build the production image with minimal footprint
 FROM base
 
-ENV GOOGLE_CALLBACK_URL="https://$FLY_APP_NAME.fly.dev/auth/google/callback"
+ENV GOOGLE_CALLBACK_URL="https://tabnine-charity-activations.fly.dev/auth/google/callback"
 ENV NODE_ENV="production"
 
 WORKDIR /myapp
