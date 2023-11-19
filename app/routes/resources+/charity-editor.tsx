@@ -107,30 +107,30 @@ export function CharityEditor({
     >
       <input name="id" type="hidden" value={charity?.id} />
       <Field
+        errors={fields.name.errors}
         inputProps={{
           ...conform.input(fields.name),
           defaultValue: charity?.name,
           onBlur: handleOnChange
         }}
-        errors={fields.name.errors}
         labelProps={{ children: "Name", htmlFor: fields.name.id }}
       />
       <Field
+        errors={fields.slug.errors}
         inputProps={{
           ...conform.input(fields.slug),
           defaultValue: charity?.slug
         }}
-        errors={fields.slug.errors}
         labelProps={{ children: "Slug", htmlFor: fields.slug.id }}
         ref={slugRef}
       />
       <TextareaField
+        errors={fields.description.errors}
+        labelProps={{ children: "Description", htmlFor: fields.description.id }}
         textareaProps={{
           ...conform.textarea(fields.description),
           defaultValue: charity?.description
         }}
-        errors={fields.description.errors}
-        labelProps={{ children: "Description", htmlFor: fields.description.id }}
       />
       <div className="flex flex-col gap-1">
         <span className="font-bold !text-brand-deep-purple">Logo</span>
@@ -146,19 +146,19 @@ export function CharityEditor({
         </span>
       </div>
       <Field
+        errors={fields.website.errors}
         inputProps={{
           ...conform.input(fields.website),
           defaultValue: charity?.website ?? undefined
         }}
-        errors={fields.website.errors}
         labelProps={{ children: "Website", htmlFor: fields.website.id }}
       />
       <Field
+        errors={fields.twitter.errors}
         inputProps={{
           ...conform.input(fields.twitter),
           defaultValue: charity?.twitter ?? undefined
         }}
-        errors={fields.twitter.errors}
         labelProps={{ children: "Twitter", htmlFor: fields.twitter.id }}
       />
       <ErrorList errors={form.errors} id={form.errorId} />

@@ -80,11 +80,11 @@ export default function AdminDashboard() {
                   <dt>
                     {charity.logoSVG ? (
                       <img
+                        alt={charity.name}
+                        className="h-12 text-brand-deep-purple"
                         src={`data:image/svg+xml;utf8,${encodeURIComponent(
                           charity.logoSVG
                         )}`}
-                        alt={charity.name}
-                        className="h-12 text-brand-deep-purple"
                       />
                     ) : null}
                     <div className="font-semibold">

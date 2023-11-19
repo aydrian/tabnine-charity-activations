@@ -180,11 +180,11 @@ export default function EventDashboard() {
                   <React.Fragment key={charity.charity_id}>
                     {charity.logoSVG ? (
                       <img
+                        alt={charity.name}
+                        className="h-12 text-brand-deep-purple"
                         src={`data:image/svg+xml;utf8,${encodeURIComponent(
                           charity.logoSVG
                         )}`}
-                        alt={charity.name}
-                        className="h-12 text-brand-deep-purple"
                       />
                     ) : null}
                   </React.Fragment>

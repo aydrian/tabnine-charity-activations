@@ -106,6 +106,7 @@ export function DonationForm({
       {event.collectLeads ? (
         <>
           <Field
+            errors={fields.firstName.errors}
             inputProps={{
               ...conform.input(fields.firstName),
               autoComplete: "given-name"
@@ -114,9 +115,9 @@ export function DonationForm({
               children: t("given-name"),
               htmlFor: fields.firstName.id
             }}
-            errors={fields.firstName.errors}
           />
           <Field
+            errors={fields.lastName.errors}
             inputProps={{
               ...conform.input(fields.lastName),
               autoComplete: "family-name"
@@ -125,9 +126,9 @@ export function DonationForm({
               children: t("family-name"),
               htmlFor: fields.lastName.id
             }}
-            errors={fields.lastName.errors}
           />
           <Field
+            errors={fields.email.errors}
             inputProps={{
               ...conform.input(fields.email),
               autoComplete: "email"
@@ -136,9 +137,9 @@ export function DonationForm({
               children: t("email"),
               htmlFor: fields.email.id
             }}
-            errors={fields.email.errors}
           />
           <Field
+            errors={fields.company.errors}
             inputProps={{
               ...conform.input(fields.company),
               autoComplete: "organization"
@@ -147,9 +148,9 @@ export function DonationForm({
               children: t("organization"),
               htmlFor: fields.company.id
             }}
-            errors={fields.company.errors}
           />
           <Field
+            errors={fields.jobRole.errors}
             inputProps={{
               ...conform.input(fields.jobRole),
               autoComplete: "organization-title"
@@ -158,7 +159,6 @@ export function DonationForm({
               children: t("organization-title"),
               htmlFor: fields.jobRole.id
             }}
-            errors={fields.jobRole.errors}
           />
         </>
       ) : null}

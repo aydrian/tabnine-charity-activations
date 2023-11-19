@@ -76,13 +76,13 @@ export function LeadEditor({ lead }: { lead: LeadType }) {
           name={fields.score.name}
         />
         <TextareaField
+          className="flex grow flex-col"
+          errors={fields.notes.errors}
+          labelProps={{ children: "Notes:", htmlFor: fields.notes.id }}
           textareaProps={{
             ...conform.textarea(fields.notes),
             defaultValue: lead.notes ?? undefined
           }}
-          className="flex grow flex-col"
-          errors={fields.notes.errors}
-          labelProps={{ children: "Notes:", htmlFor: fields.notes.id }}
         />
         <ErrorList errors={form.errors} id={form.errorId} />
       </div>

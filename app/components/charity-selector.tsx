@@ -148,11 +148,11 @@ export function CharitySelector({
                     value={selectedItemForRender.id}
                   />
                   <span
+                    className="cursor-pointer px-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeSelectedItem(selectedItemForRender);
                     }}
-                    className="cursor-pointer px-1"
                   >
                     &#10005;
                   </span>

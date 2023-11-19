@@ -191,55 +191,57 @@ export function EventEditor({
     >
       <input name="id" type="hidden" value={event?.id} />
       <Field
+        errors={fields.name.errors}
         inputProps={{
           ...conform.input(fields.name),
           defaultValue: event?.name,
           onBlur: handleOnChange
         }}
-        errors={fields.name.errors}
         labelProps={{ children: "Name", htmlFor: fields.name.id }}
       />
       <Field
+        errors={fields.slug.errors}
         inputProps={{
           ...conform.input(fields.slug),
           defaultValue: event?.slug
         }}
-        errors={fields.slug.errors}
         labelProps={{ children: "Slug", htmlFor: fields.slug.id }}
         ref={slugRef}
       />
       <div className="flex w-full flex-row justify-between gap-2">
         <Field
+          className="grow"
+          errors={fields.startDate.errors}
           inputProps={{
             ...conform.input(fields.startDate),
             defaultValue: event?.startDate?.split("T")[0],
             type: "date"
           }}
-          className="grow"
-          errors={fields.startDate.errors}
           labelProps={{ children: "Start Date", htmlFor: fields.startDate.id }}
         />
         <Field
+          className="grow"
+          errors={fields.endDate.errors}
           inputProps={{
             ...conform.input(fields.endDate),
             defaultValue: event?.endDate?.split("T")[0],
             type: "date"
           }}
-          className="grow"
-          errors={fields.endDate.errors}
           labelProps={{ children: "End Date", htmlFor: fields.endDate.id }}
         />
       </div>
       <Field
+        errors={fields.location.errors}
         inputProps={{
           ...conform.input(fields.location),
           defaultValue: event?.location
         }}
-        errors={fields.location.errors}
         labelProps={{ children: "Location", htmlFor: fields.location.id }}
       />
       <div className="flex w-full flex-row justify-between gap-2">
         <Field
+          className="grow"
+          errors={fields.donationAmount.errors}
           inputProps={{
             ...conform.input(fields.donationAmount),
             defaultValue: event?.donationAmount || "3",
@@ -249,14 +251,13 @@ export function EventEditor({
             children: "Donation Amount",
             htmlFor: fields.donationAmount.id
           }}
-          className="grow"
-          errors={fields.donationAmount.errors}
         />
         <SelectField
           buttonProps={{
             ...conform.input(fields.donationCurrency, { ariaAttributes: true }),
             defaultValue: event?.donationCurrency ?? "usd"
           }}
+          errors={fields.donationCurrency.errors}
           labelProps={{
             children: "Donation Currency",
             htmlFor: fields.donationCurrency.id
@@ -265,9 +266,10 @@ export function EventEditor({
             { label: "usd", value: "usd" },
             { label: "eur", value: "eur" }
           ]}
-          errors={fields.donationCurrency.errors}
         />
         <Field
+          className="grow"
+          errors={fields.twitter.errors}
           inputProps={{
             ...conform.input(fields.twitter),
             defaultValue: event?.twitter ?? undefined
@@ -276,11 +278,10 @@ export function EventEditor({
             children: "Twitter",
             htmlFor: fields.twitter.id
           }}
-          className="grow"
-          errors={fields.twitter.errors}
         />
       </div>
       <TemplateEditorField
+        errors={fields.responseTemplate.errors}
         labelProps={{
           children: "Response Template",
           htmlFor: fields.responseTemplate.id
@@ -313,9 +314,9 @@ export function EventEditor({
             event?.responseTemplate ||
             "Thank you for helping us donate {{donationAmount}} to {{charity}} at {{event}}."
         }}
-        errors={fields.responseTemplate.errors}
       />
       <TemplateEditorField
+        errors={fields.tweetTemplate.errors}
         labelProps={{
           children: "Tweet Template",
           htmlFor: fields.tweetTemplate.id
@@ -343,7 +344,6 @@ export function EventEditor({
             event?.tweetTemplate ||
             `I just helped @${appConfig.company.twitter} donate {{donationAmount}} to {{charity}} at {{event}}.`
         }}
-        errors={fields.tweetTemplate.errors}
       />
       <CheckboxField
         buttonProps={{
@@ -352,14 +352,15 @@ export function EventEditor({
           onCheckedChange: () => setCollectLeads(!collectLeads),
           required: false
         }}
+        errors={fields.collectLeads.errors}
         labelProps={{
           children: "Collect lead data?",
           htmlFor: fields.collectLeads.id
         }}
-        errors={fields.collectLeads.errors}
       />
       {collectLeads ? (
         <TextareaField
+          errors={fields.legalBlurb.errors}
           labelProps={{
             children: "Legal Blurb",
             htmlFor: fields.legalBlurb.id
@@ -368,7 +369,6 @@ export function EventEditor({
             ...conform.textarea(fields.legalBlurb),
             defaultValue: event?.legalBlurb ?? undefined
           }}
-          errors={fields.legalBlurb.errors}
         />
       ) : null}
       <div className="flex flex-col gap-2">
