@@ -34,11 +34,11 @@ export function CharityPicker({
               value={charity.id}
             />
             <label
-              className="grow cursor-pointer rounded-lg border border-gray-300 bg-white p-5 text-center text-2xl font-bold hover:bg-gray-50 focus:outline-none peer-checked:ring-4 peer-checked:ring-brand-focus peer-checked:ring-offset-4"
-              htmlFor={`charity-${index}`}
               style={{
                 backgroundColor: hexToRgbA(charity.color, 0.5)
               }}
+              className="grow cursor-pointer rounded-lg border border-gray-300 bg-white p-5 text-center text-2xl font-bold hover:bg-gray-50 focus:outline-none peer-checked:ring-4 peer-checked:ring-brand-focus peer-checked:ring-offset-4"
+              htmlFor={`charity-${index}`}
             >
               {charity.name}
             </label>
