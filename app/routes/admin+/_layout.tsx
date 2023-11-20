@@ -98,7 +98,7 @@ export default function AdminLayout() {
           </nav>
         </div>
       </header>
-      <main className="min-h-screen max-w-full bg-brand-deep-purple px-4 pb-8 pt-8">
+      <main className="min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover px-4 pb-8 pt-8">
         <Outlet />
       </main>
       <Footer />

@@ -29,7 +29,7 @@ const EventWithLeads = z.object({
     .max(4, "A max of 4 charities is allowed")
     .min(1, "At least 1 charity is required"),
   collectLeads: z.literal("on"),
-  donationAmount: z.number().default(3.0),
+  donationAmount: z.coerce.number().default(3.0),
   donationCurrency: z.string().default("usd"),
   endDate: z.coerce.date({ required_error: "End Date is required" }),
   id: z.string().optional(),
