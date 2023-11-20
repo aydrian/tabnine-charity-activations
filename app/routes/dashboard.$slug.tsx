@@ -79,7 +79,7 @@ export default function EventDashboard() {
   });
 
   return (
-    <main className="min-h-screen max-w-full bg-brand-deep-purple p-4">
+    <main className="min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover p-4">
       <section className="prose mx-auto grid max-w-7xl">
         <h1 className="mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center font-poppins text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
           {appConfig.company.name} at {event.name}

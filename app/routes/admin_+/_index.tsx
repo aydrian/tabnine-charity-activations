@@ -53,7 +53,7 @@ export default function AdminIndex() {
           </a>
         </nav>
       </header>
-      <main className="prose min-h-screen max-w-full bg-brand-deep-purple px-4 pb-16 pt-16 ">
+      <main className="prose min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover px-4 pb-16 pt-16">
         <section className="mx-auto grid max-w-4xl gap-12">
           <h1 className="mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center font-poppins text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
             Charity Activations

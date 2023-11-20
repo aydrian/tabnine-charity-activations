@@ -49,10 +49,17 @@ export const action = async ({ request }: DataFunctionArgs) => {
     return json({ status: "success", submission } as const);
   }
 
-  const { collectLeads, ...data } = submission.value;
+  const { charityId, collectLeads, eventId, ...leadData } = submission.value;
+  console.log({ collectLeads, leadData });
+  const createLead = { Lead: { create: { ...leadData } } };
 
   const donation = await prisma.donation.create({
-    data,
+    // @ts-ignore
+    data: {
+      charityId,
+      eventId,
+      ...(collectLeads === "true" ? createLead : undefined)
+    },
     select: { id: true }
   });
   return redirect(`/donated/${donation.id}`);
@@ -82,6 +89,10 @@ export function DonationForm({
     constraint: getFieldsetConstraint(
       event.collectLeads ? DonationWithLeads : DonationWithoutLeads
     ) as any,
+    defaultValue: {
+      collectLeads: event.collectLeads,
+      eventId: event.id
+    },
     id: "donation-form",
     lastSubmission: donationFormFetcher.data?.submission,
     onValidate({ formData }) {
@@ -97,12 +108,8 @@ export function DonationForm({
       method="post"
       {...form.props}
     >
-      <input name="eventId" type="hidden" value={event.id} />
-      <input
-        name="collectLeads"
-        type="hidden"
-        value={String(event.collectLeads)}
-      />
+      <input {...conform.input(fields.eventId, { type: "hidden" })} />
+      <input {...conform.input(fields.collectLeads, { type: "hidden" })} />
       {event.collectLeads ? (
         <>
           <Field
