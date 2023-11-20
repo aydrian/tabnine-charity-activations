@@ -45,7 +45,7 @@ export default function AdminIndex() {
             <CompanyLogo />
           </a>
           <a
-            href="https://github.com/aydrian/event-charity-activations/"
+            href="https://github.com/aydrian/tabnine-charity-activations/"
             rel="noreferrer"
             target="_blank"
           >

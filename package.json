@@ -4,7 +4,7 @@
   "type": "module",
   "author": "Aydrian Howard <aydrian@cockroachlabs.com> (https://cockroachlabs.com)",
   "license": "MIT",
-  "repository": "github:aydrian/event-charity-activations",
+  "repository": "github:aydrian/tabnine-charity-activations",
   "scripts": {
     "build": "remix build",
     "build:icons": "tsx build-icons.ts",
