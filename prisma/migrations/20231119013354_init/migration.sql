@@ -4,6 +4,9 @@ CREATE TYPE "source_type" AS ENUM ('form');
 -- CreateEnum
 CREATE TYPE "lead_score" AS ENUM ('badge_scan', 'conversation', 'meeting_requested');
 
+-- CreateEnum
+CREATE TYPE IF NOT EXISTS "crdb_internal_region" AS ENUM ('aws-ap-south-1', 'aws-eu-central-1', 'aws-us-east-1', 'aws-us-west-2');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
