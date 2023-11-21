@@ -15,7 +15,7 @@ export const action: ActionFunction = ({ request }) => {
   return authenticator.authenticate("google", request);
 };
 
-export function GoogleLoginForm() {
+export function GoogleLoginForm({ className }: { className?: string }) {
   const fetcher = useFetcher<typeof action>();
 
   const [form] = useForm({
@@ -24,7 +24,12 @@ export function GoogleLoginForm() {
   });
 
   return (
-    <fetcher.Form action="/auth/google" method="POST" {...form.props}>
+    <fetcher.Form
+      action="/auth/google"
+      className={className}
+      method="POST"
+      {...form.props}
+    >
       <GoogleLoginButton className="mt-4" state={fetcher.state} />
     </fetcher.Form>
   );

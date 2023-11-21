@@ -49,14 +49,14 @@ export default function AdminLayout() {
   const { user } = useLoaderData<typeof loader>();
   return (
     <>
-      <header className="w-full bg-white p-4 shadow-lg">
+      <header className="w-full bg-white p-4 px-2 shadow-lg md:p-4">
         <div className="container mx-auto flex flex-col flex-wrap items-center md:flex-row">
           <div className="md:w-2/6">
-            <CompanyLogo />
+            <CompanyLogo className="w-32 md:w-44" />
           </div>
           <div className="flex items-center md:w-2/6 md:items-center md:justify-center">
             <Link
-              className="w-auto fill-current font-poppins text-3xl font-bold text-brand-deep-purple"
+              className="w-auto fill-current text-center font-poppins text-2xl font-semibold text-brand-deep-purple md:text-3xl md:font-bold"
               to="/admin/dashboard"
             >
               Charity Activations

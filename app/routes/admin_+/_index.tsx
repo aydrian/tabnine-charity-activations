@@ -53,23 +53,23 @@ export default function AdminIndex() {
           </a>
         </nav>
       </header>
-      <main className="prose min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover px-4 pb-16 pt-16">
-        <section className="mx-auto grid max-w-4xl gap-12">
-          <h1 className="mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center font-poppins text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
-            Charity Activations
-          </h1>
+      <main className="min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover p-4 md:py-16">
+        <section className="mx-auto grid max-w-4xl gap-6 md:gap-12">
           <div className="mx-auto max-w-3xl">
-            <h2 className="my-0 text-center text-white">
+            <h1 className="mb-2 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center font-poppins text-4xl font-bold !leading-tight text-transparent sm:text-7xl md:text-5xl">
+              Charity Activations
+            </h1>
+            <h2 className="my-0 text-center text-lg leading-tight text-white md:text-2xl">
               Manage charity activations for {appConfig.company.name} sponsored
               events.
             </h2>
           </div>
-          <div className="border-brand-gray-b rounded border bg-white p-8 sm:px-16">
+          <div className="border-brand-gray-b rounded border bg-white p-6 sm:px-16">
             <h3 className="m-0 font-bold text-brand-deep-purple">Login</h3>
             {data.loginMessage ? (
               <div className="text-sm text-red-500">{data.loginMessage}</div>
             ) : null}
-            <GoogleLoginForm />
+            <GoogleLoginForm className="text-center md:text-left" />
           </div>
         </section>
       </main>
