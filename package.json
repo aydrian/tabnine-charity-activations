@@ -101,7 +101,7 @@
     "typescript": "^5.3.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": "~18"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
