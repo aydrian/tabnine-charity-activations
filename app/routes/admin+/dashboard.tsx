@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   // const SVG = new InlineSVG();
   return (
     <section className="prose mx-auto grid max-w-4xl">
-      <h1 className="font-poppins text-2xl text-white md:text-4xl">
+      <h1 className="font-inter text-2xl text-white md:text-4xl">
         Admin Dashboard
       </h1>
       <div className="flex flex-col justify-between gap-6 md:flex-row md:gap-12">

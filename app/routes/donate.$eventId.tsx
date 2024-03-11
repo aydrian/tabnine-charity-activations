@@ -56,7 +56,7 @@ export default function EventDonate() {
     <>
       <main className="prose min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover px-4 pb-8 pt-8">
         <section className="mx-auto max-w-4xl">
-          <h1 className="mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center font-poppins text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
+          <h1 className="font-inter mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
             {event.name}
           </h1>
           <p className="text-center text-white">

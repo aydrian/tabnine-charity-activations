@@ -56,7 +56,7 @@ export default function AdminIndex() {
       <main className="min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover p-4 md:py-16">
         <section className="mx-auto grid max-w-4xl gap-6 md:gap-12">
           <div className="mx-auto max-w-3xl">
-            <h1 className="mb-2 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center font-poppins text-4xl font-bold !leading-tight text-transparent sm:text-7xl md:text-5xl">
+            <h1 className="font-inter mb-2 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center text-4xl font-bold !leading-tight text-transparent sm:text-7xl md:text-5xl">
               Charity Activations
             </h1>
             <h2 className="my-0 text-center text-lg leading-tight text-white md:text-2xl">

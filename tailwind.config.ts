@@ -81,11 +81,40 @@ export default {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))"
+        },
+        tabnine: {
+          blue: {
+            100: "#edf2ff",
+            200: "#cad5ee",
+            300: "#5160a5",
+            400: "#5160a5",
+            500: "#172b86"
+          },
+          "bright-blue": "#1f46c1",
+          "bright-red": "#ff2210",
+          "deep-navy": "#131a3a",
+          "dev-purple": "#9465ec",
+          highlight: "#2ad5e7",
+          neutral: {
+            black: "#060813",
+            "dark-navy": "#0c1025",
+            "light-white": "#f0f5ff",
+            "medium-grey": "#494c5b",
+            white: "#ffffff"
+          },
+          red: {
+            100: "#f7c6c2",
+            200: "#ef8c84",
+            300: "#e75347",
+            400: "#df1a0a",
+            500: "#a71307"
+          }
         }
       },
       fontFamily: {
-        poppins: ["'Poppins'", "sans-serif"],
+        inter: ["'Inter'", "sans-serif"],
         roboto: ["'Roboto'", "sans-serif"],
+        "roboto-mono": ["'Roboto Mono'", "monospace"],
         sans: ["'Roboto'", ...defaultTheme.fontFamily.sans]
       },
       keyframes: {

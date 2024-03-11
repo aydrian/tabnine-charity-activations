@@ -56,7 +56,7 @@ export default function AdminLayout() {
           </div>
           <div className="flex items-center md:w-2/6 md:items-center md:justify-center">
             <Link
-              className="w-auto fill-current text-center font-poppins text-2xl font-semibold text-brand-deep-purple md:text-3xl md:font-bold"
+              className="font-inter w-auto fill-current text-center text-2xl font-semibold text-brand-deep-purple md:text-3xl md:font-bold"
               to="/admin/dashboard"
             >
               Charity Activations
