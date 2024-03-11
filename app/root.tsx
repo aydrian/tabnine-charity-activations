@@ -14,7 +14,7 @@ import {
   useLoaderData
 } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
-import { useChangeLanguage } from "remix-i18next";
+import { useChangeLanguage } from "remix-i18next/react";
 
 import iconHref from "~/components/icons/sprite.svg";
 import i18next from "~/utils/i18next.server.ts";

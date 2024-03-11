@@ -1,5 +1,5 @@
 import Backend from "i18next-prisma-backend";
-import { RemixI18Next } from "remix-i18next";
+import { RemixI18Next } from "remix-i18next/server";
 
 import i18n from "~/i18n.ts"; // your i18n configuration file
 
