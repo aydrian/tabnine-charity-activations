@@ -19,6 +19,11 @@ import { Button, type ButtonProps } from "./ui/button.tsx";
 import { Checkbox, type CheckboxProps } from "./ui/checkbox.tsx";
 import { Input } from "./ui/input.tsx";
 import { Label } from "./ui/label.tsx";
+import {
+  RadioGroup,
+  RadioGroupItem,
+  type RadioGroupProps
+} from "./ui/radio-group.tsx";
 import { Textarea } from "./ui/textarea.tsx";
 
 export type ListOfErrors = Array<null | string | undefined> | null | undefined;
@@ -183,6 +188,91 @@ export function TemplateEditorField({
   );
 }
 
+export function RadioGroupField({
+  className,
+  errors,
+  labelProps,
+  options,
+  radioGroupProps
+}: {
+  className?: string;
+  errors?: ListOfErrors;
+  labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
+  options: { label: string; value: string }[];
+  radioGroupProps: RadioGroupProps;
+}) {
+  const shadowInputRef = useRef<HTMLInputElement>(null);
+  const control = useInputEvent({
+    ref: shadowInputRef
+  });
+  const fallbackId = useId();
+  const id = radioGroupProps.name ?? fallbackId;
+  const errorId = errors?.length ? `${id}-error` : undefined;
+  return (
+    <div>
+      <input ref={shadowInputRef} type="hidden" {...radioGroupProps} />
+      <Label
+        htmlFor={id}
+        {...labelProps}
+        className="font-bold text-brand-deep-purple"
+      />
+      <RadioGroup
+        onBlur={control.blur}
+        onFocus={control.focus}
+        onValueChange={control.change}
+      >
+        {options.map(({ label, value }, index) => (
+          <div className="flex items-center space-x-2" key={value}>
+            <RadioGroupItem id={`option-${index}`} value={value} />
+            <Label htmlFor={`option-${index}`}>{label}</Label>
+          </div>
+        ))}
+      </RadioGroup>
+      <div className="px-4 pb-3 pt-1">
+        {errorId ? <ErrorList errors={errors} id={errorId} /> : null}
+      </div>
+    </div>
+  );
+}
+
+export function CheckboxGroupField({
+  checkboxGroupProps,
+  className,
+  errors,
+  labelProps,
+  options
+}: {
+  checkboxGroupProps: any;
+  className?: string;
+  errors?: ListOfErrors;
+  labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
+  options: { label: string; value: string }[];
+}) {
+  const fallbackId = useId();
+  const id = checkboxGroupProps.name ?? fallbackId;
+  const errorId = errors?.length ? `${id}-error` : undefined;
+  return (
+    <div>
+      <Label
+        htmlFor={id}
+        {...labelProps}
+        className="font-bold text-brand-deep-purple"
+      />
+      <div className="grid gap-2">
+        {options.map(({ label, value }, index) => (
+          <div className="flex items-center space-x-2" key={value}>
+            <Checkbox id={`option-${index}`} value={value} />
+            <Label htmlFor={`option-${index}`}>{label}</Label>
+          </div>
+        ))}
+      </div>
+      <div className="px-4 pb-3 pt-1">
+        {errorId ? <ErrorList errors={errors} id={errorId} /> : null}
+      </div>
+    </div>
+  );
+}
+
 export function SelectField({
   buttonProps,
   className,
@@ -335,7 +425,7 @@ export function SubmitButton({
       {...props}
       className={clsx(
         props.className,
-        "bg-brand-electric-purple duration-300 hover:bg-brand-electric-purple/90 disabled:bg-brand-electric-purple/50"
+        "bg-tabnine-bright-red text-tabnine-neutral-white duration-300 hover:bg-tabnine-red-400 disabled:bg-tabnine-blue-300 disabled:text-tabnine-neutral-light-white"
       )}
       disabled={props.disabled || state !== "idle"}
     >

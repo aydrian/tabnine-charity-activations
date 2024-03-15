@@ -6,7 +6,14 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { CharityPicker } from "~/components/charity-picker.tsx";
-import { ErrorList, Field, SubmitButton } from "~/components/forms.tsx";
+import {
+  CheckboxGroupField,
+  ErrorList,
+  Field,
+  RadioGroupField,
+  SubmitButton,
+  TextareaField
+} from "~/components/forms.tsx";
 import { prisma } from "~/utils/db.server.ts";
 
 const DonationWithLeads = z.object({
@@ -23,7 +30,13 @@ const DonationWithLeads = z.object({
 const DonationWithoutLeads = z.object({
   charityId: z.string(),
   collectLeads: z.literal("false"),
-  eventId: z.string()
+  companyAdoption: z.string(),
+  email: z.string({ required_error: "Company email is invalid" }),
+  eventId: z.string(),
+  sdicUseAI: z.string(),
+  statementAgree: z.coerce.number(),
+  toolEval: z.string(),
+  usingAI: z.boolean()
 });
 
 const DonationFormSchema = z.discriminatedUnion("collectLeads", [
@@ -110,6 +123,17 @@ export function DonationForm({
     >
       <input {...conform.input(fields.eventId, { type: "hidden" })} />
       <input {...conform.input(fields.collectLeads, { type: "hidden" })} />
+      <Field
+        errors={fields.email.errors}
+        inputProps={{
+          ...conform.input(fields.email),
+          autoComplete: "email"
+        }}
+        labelProps={{
+          children: t("email"),
+          htmlFor: fields.email.id
+        }}
+      />
       {event.collectLeads ? (
         <>
           <Field
@@ -132,17 +156,6 @@ export function DonationForm({
             labelProps={{
               children: t("family-name"),
               htmlFor: fields.lastName.id
-            }}
-          />
-          <Field
-            errors={fields.email.errors}
-            inputProps={{
-              ...conform.input(fields.email),
-              autoComplete: "email"
-            }}
-            labelProps={{
-              children: t("email"),
-              htmlFor: fields.email.id
             }}
           />
           <Field
@@ -169,6 +182,101 @@ export function DonationForm({
           />
         </>
       ) : null}
+      <RadioGroupField
+        errors={fields.usingAI.errors}
+        labelProps={{
+          children:
+            "As an individual, are you currently using AI in your software development processes?",
+          htmlFor: fields.usingAI.id
+        }}
+        options={[
+          { label: "Yes", value: "true" },
+          { label: "No", value: "false" }
+        ]}
+        radioGroupProps={{
+          ...conform.input(fields.usingAI)
+        }}
+      />
+      <RadioGroupField
+        errors={fields.companyAdoption.errors}
+        labelProps={{
+          children:
+            "Are you currently using AI in your software development processes?",
+          htmlFor: fields.companyAdoption.id
+        }}
+        options={[
+          { label: "Not yet evaluating", value: "Not yet evaluating" },
+          {
+            label: "Plan to evaluate in the next 6 months",
+            value: "Plan to evaluate in the next 6 months"
+          },
+          { label: "Currently Evaluating", value: "Currently Evaluating" },
+          {
+            label: "Have one or more tools in use within our company",
+            value: "Have one or more tools in use within our company"
+          },
+          {
+            label:
+              "Broad adoption of one or more tools across our organization",
+            value: "Broad adoption of one or more tools across our organization"
+          }
+        ]}
+        radioGroupProps={{
+          ...conform.input(fields.companyAdoption)
+        }}
+      />
+      <CheckboxGroupField
+        checkboxGroupProps={{
+          ...conform.input(fields.sdicUseAI)
+        }}
+        errors={fields.sdicUseAI.errors}
+        labelProps={{
+          children: `In what parts of the software development lifecycle are AI tools in use today?`,
+          htmlFor: fields.sdicUseAI.id
+        }}
+        options={[
+          {
+            label: "Planning / architecture",
+            value: "Planning / architecture"
+          },
+          { label: "Code generation", value: "Code generation" },
+          { label: "Documentation", value: "Documentation" },
+          { label: "Testing", value: "Testing" },
+          { label: "Security", value: "Security" },
+          { label: "Deployment / DevOps", value: "Deployment / DevOps" },
+          { label: "Maintenance / Bug Fixes", value: "Maintenance / Bug Fixes" }
+        ]}
+      />
+      <RadioGroupField
+        errors={fields.statementAgree.errors}
+        labelProps={{
+          children: `How much do you agree with this statement, “AI tools add value to the software development process today”?`,
+          htmlFor: fields.statementAgree.id
+        }}
+        options={[
+          { label: "1 - strongly disagree ", value: "1" },
+          { label: "2", value: "2" },
+          { label: "3", value: "3" },
+          { label: "4", value: "4" },
+          { label: "5", value: "5" },
+          { label: "6", value: "6" },
+          { label: "7", value: "7" },
+          { label: "8", value: "8" },
+          { label: "9", value: "9" },
+          { label: "10 - strongly agree", value: "10" }
+        ]}
+        radioGroupProps={{
+          ...conform.input(fields.statementAgree)
+        }}
+      />
+      <TextareaField
+        errors={fields.toolEval.errors}
+        labelProps={{
+          children: "What tools are you currently using and/or evaluating?",
+          htmlFor: fields.toolEval.id
+        }}
+        textareaProps={conform.textarea(fields.toolEval)}
+      />
       <CharityPicker
         charities={event.charities}
         errors={fields.charityId.errors}
