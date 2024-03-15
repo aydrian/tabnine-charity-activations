@@ -1,4 +1,4 @@
-import { type DataFunctionArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { requireUserId } from "~/utils/auth.server.ts";
@@ -6,7 +6,7 @@ import { prisma } from "~/utils/db.server.ts";
 
 import { CharityEditor } from "../resources+/charity-editor.tsx";
 
-export const loader = async ({ params, request }: DataFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const { charityId } = params;
   const charity = await prisma.charity.findUnique({

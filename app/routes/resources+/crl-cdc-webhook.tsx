@@ -1,4 +1,8 @@
-import { type DataFunctionArgs, json } from "@remix-run/node";
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  json
+} from "@remix-run/node";
 import { eventStream } from "remix-utils/sse/server";
 
 import { getDashboardCharities } from "~/models/charity.server.ts";
@@ -20,7 +24,7 @@ export type NewDonationEvent = {
   charityId: string;
 };
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   return eventStream(request.signal, function setup(send) {
     function handle({ charity_id, event_id }: Payload) {
       getDashboardCharities(event_id).then((charities) => {
@@ -39,7 +43,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   });
 };
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   if (request.method !== "POST") {
     return json(
       { message: "Method not allowed" },

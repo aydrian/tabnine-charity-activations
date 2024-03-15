@@ -1,6 +1,6 @@
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
+import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -31,7 +31,7 @@ const DonationFormSchema = z.discriminatedUnion("collectLeads", [
   DonationWithoutLeads
 ]);
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const submission = parse(formData, {
     schema: DonationFormSchema
