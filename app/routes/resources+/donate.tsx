@@ -1,5 +1,10 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useForm
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
@@ -46,20 +51,11 @@ const DonationFormSchema = z.discriminatedUnion("collectLeads", [
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: DonationFormSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+  if (submission.status === "error") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { charityId, collectLeads, eventId, ...leadData } = submission.value;
@@ -99,17 +95,15 @@ export function DonationForm({
   const donationFormFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(
-      event.collectLeads ? DonationWithLeads : DonationWithoutLeads
-    ) as any,
+    constraint: getZodConstraint(DonationFormSchema),
     defaultValue: {
-      collectLeads: event.collectLeads,
+      collectLeads: String(event.collectLeads),
       eventId: event.id
     },
     id: "donation-form",
-    lastSubmission: donationFormFetcher.data?.submission,
+    lastResult: donationFormFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: DonationFormSchema });
+      return parseWithZod(formData, { schema: DonationFormSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -119,14 +113,14 @@ export function DonationForm({
       action="/resources/donate"
       className="not-prose flex flex-col sm:mb-4"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
     >
-      <input {...conform.input(fields.eventId, { type: "hidden" })} />
-      <input {...conform.input(fields.collectLeads, { type: "hidden" })} />
+      <input {...getInputProps(fields.eventId, { type: "hidden" })} />
+      <input {...getInputProps(fields.collectLeads, { type: "hidden" })} />
       <Field
         errors={fields.email.errors}
         inputProps={{
-          ...conform.input(fields.email),
+          ...getInputProps(fields.email, { type: "email" }),
           autoComplete: "email"
         }}
         labelProps={{
@@ -139,7 +133,7 @@ export function DonationForm({
           <Field
             errors={fields.firstName.errors}
             inputProps={{
-              ...conform.input(fields.firstName),
+              ...getInputProps(fields.firstName, { type: "text" }),
               autoComplete: "given-name"
             }}
             labelProps={{
@@ -150,7 +144,7 @@ export function DonationForm({
           <Field
             errors={fields.lastName.errors}
             inputProps={{
-              ...conform.input(fields.lastName),
+              ...getInputProps(fields.lastName, { type: "text" }),
               autoComplete: "family-name"
             }}
             labelProps={{
@@ -161,7 +155,7 @@ export function DonationForm({
           <Field
             errors={fields.company.errors}
             inputProps={{
-              ...conform.input(fields.company),
+              ...getInputProps(fields.company, { type: "text" }),
               autoComplete: "organization"
             }}
             labelProps={{
@@ -172,7 +166,7 @@ export function DonationForm({
           <Field
             errors={fields.jobRole.errors}
             inputProps={{
-              ...conform.input(fields.jobRole),
+              ...getInputProps(fields.jobRole, { type: "text" }),
               autoComplete: "organization-title"
             }}
             labelProps={{
@@ -194,7 +188,7 @@ export function DonationForm({
           { label: "No", value: "false" }
         ]}
         radioGroupProps={{
-          ...conform.input(fields.usingAI)
+          ...getInputProps(fields.usingAI, { type: "text" })
         }}
       />
       <RadioGroupField
@@ -222,12 +216,12 @@ export function DonationForm({
           }
         ]}
         radioGroupProps={{
-          ...conform.input(fields.companyAdoption)
+          ...getInputProps(fields.companyAdoption, { type: "text" })
         }}
       />
       <CheckboxGroupField
         checkboxGroupProps={{
-          ...conform.input(fields.sdicUseAI)
+          ...getInputProps(fields.sdicUseAI, { type: "text" })
         }}
         errors={fields.sdicUseAI.errors}
         labelProps={{
@@ -266,7 +260,7 @@ export function DonationForm({
           { label: "10 - strongly agree", value: "10" }
         ]}
         radioGroupProps={{
-          ...conform.input(fields.statementAgree)
+          ...getInputProps(fields.statementAgree, { type: "text" })
         }}
       />
       <TextareaField
@@ -275,7 +269,7 @@ export function DonationForm({
           children: "What tools are you currently using and/or evaluating?",
           htmlFor: fields.toolEval.id
         }}
-        textareaProps={conform.textarea(fields.toolEval)}
+        textareaProps={getTextareaProps(fields.toolEval)}
       />
       <CharityPicker
         charities={event.charities}

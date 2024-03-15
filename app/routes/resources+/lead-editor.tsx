@@ -1,5 +1,5 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { getFormProps, getTextareaProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { LeadScore } from "@prisma/client";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
@@ -23,20 +23,12 @@ const LeadEditorSchema = z.object({
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: LeadEditorSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+
+  if (submission.status === "error") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { id, notes, score } = submission.value;
@@ -52,11 +44,11 @@ export function LeadEditor({ lead }: { lead: LeadType }) {
   const leadEditorFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(LeadEditorSchema),
+    constraint: getZodConstraint(LeadEditorSchema),
     id: "lead-editor",
-    lastSubmission: leadEditorFetcher.data?.submission,
+    lastResult: leadEditorFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: LeadEditorSchema });
+      return parseWithZod(formData, { schema: LeadEditorSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -65,7 +57,7 @@ export function LeadEditor({ lead }: { lead: LeadType }) {
     <leadEditorFetcher.Form
       action="/resources/lead-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="flex flex-col gap-3"
     >
       <div className="flex flex-col gap-1 md:flex-row md:gap-3">
@@ -80,7 +72,7 @@ export function LeadEditor({ lead }: { lead: LeadType }) {
           errors={fields.notes.errors}
           labelProps={{ children: "Notes:", htmlFor: fields.notes.id }}
           textareaProps={{
-            ...conform.textarea(fields.notes),
+            ...getTextareaProps(fields.notes),
             defaultValue: lead.notes ?? undefined
           }}
         />

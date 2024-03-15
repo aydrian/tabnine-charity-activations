@@ -1,4 +1,4 @@
-import { useInputEvent } from "@conform-to/react";
+import { useInputControl } from "@conform-to/react";
 import { clsx } from "clsx";
 import React, { useId, useRef } from "react";
 

@@ -1,5 +1,10 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useForm
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { type ChangeEvent, useRef } from "react";
@@ -31,20 +36,11 @@ export const CharityEditorSchema = z.object({
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: CharityEditorSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+  if (submission.status === "error") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { id, ...data } = submission.value;
@@ -82,11 +78,11 @@ export function CharityEditor({
   const charityEditorFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(CharityEditorSchema),
+    constraint: getZodConstraint(CharityEditorSchema),
     id: "charity-editor",
-    lastSubmission: charityEditorFetcher.data?.submission,
+    lastResult: charityEditorFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: CharityEditorSchema });
+      return parseWithZod(formData, { schema: CharityEditorSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -102,14 +98,14 @@ export function CharityEditor({
     <charityEditorFetcher.Form
       action="/resources/charity-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="not-prose mb-8 flex flex-col sm:mb-4"
     >
       <input name="id" type="hidden" value={charity?.id} />
       <Field
         errors={fields.name.errors}
         inputProps={{
-          ...conform.input(fields.name),
+          ...getInputProps(fields.name, { type: "text" }),
           defaultValue: charity?.name,
           onBlur: handleOnChange
         }}
@@ -118,7 +114,7 @@ export function CharityEditor({
       <Field
         errors={fields.slug.errors}
         inputProps={{
-          ...conform.input(fields.slug),
+          ...getInputProps(fields.slug, { type: "text" }),
           defaultValue: charity?.slug
         }}
         labelProps={{ children: "Slug", htmlFor: fields.slug.id }}
@@ -128,7 +124,7 @@ export function CharityEditor({
         errors={fields.description.errors}
         labelProps={{ children: "Description", htmlFor: fields.description.id }}
         textareaProps={{
-          ...conform.textarea(fields.description),
+          ...getTextareaProps(fields.description),
           defaultValue: charity?.description
         }}
       />
@@ -148,7 +144,7 @@ export function CharityEditor({
       <Field
         errors={fields.website.errors}
         inputProps={{
-          ...conform.input(fields.website),
+          ...getInputProps(fields.website, { type: "text" }),
           defaultValue: charity?.website ?? undefined
         }}
         labelProps={{ children: "Website", htmlFor: fields.website.id }}
@@ -156,7 +152,7 @@ export function CharityEditor({
       <Field
         errors={fields.twitter.errors}
         inputProps={{
-          ...conform.input(fields.twitter),
+          ...getInputProps(fields.twitter, { type: "text" }),
           defaultValue: charity?.twitter ?? undefined
         }}
         labelProps={{ children: "Twitter", htmlFor: fields.twitter.id }}

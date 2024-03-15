@@ -1,5 +1,10 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useForm
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { type ChangeEvent, useRef, useState } from "react";
@@ -76,20 +81,12 @@ export const EventEditorSchema = z
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: EventEditorSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+
+  if (submission.status === "error") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { charities, id, ...data } = submission.value;
@@ -164,13 +161,13 @@ export function EventEditor({
   const eventEditorFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(
+    constraint: getZodConstraint(
       collectLeads ? EventWithLeads : EventWithoutLeads
     ) as any,
     id: "event-editor",
-    lastSubmission: eventEditorFetcher.data?.submission,
+    lastResult: eventEditorFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: EventEditorSchema });
+      return parseWithZod(formData, { schema: EventEditorSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -186,14 +183,14 @@ export function EventEditor({
     <eventEditorFetcher.Form
       action="/resources/event-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="not-prose mb-8 flex flex-col sm:mb-4"
     >
       <input name="id" type="hidden" value={event?.id} />
       <Field
         errors={fields.name.errors}
         inputProps={{
-          ...conform.input(fields.name),
+          ...getInputProps(fields.name, { type: "text" }),
           defaultValue: event?.name,
           onBlur: handleOnChange
         }}
@@ -202,7 +199,7 @@ export function EventEditor({
       <Field
         errors={fields.slug.errors}
         inputProps={{
-          ...conform.input(fields.slug),
+          ...getInputProps(fields.slug, { type: "text" }),
           defaultValue: event?.slug
         }}
         labelProps={{ children: "Slug", htmlFor: fields.slug.id }}
@@ -213,9 +210,8 @@ export function EventEditor({
           className="grow"
           errors={fields.startDate.errors}
           inputProps={{
-            ...conform.input(fields.startDate),
-            defaultValue: event?.startDate?.split("T")[0],
-            type: "date"
+            ...getInputProps(fields.startDate, { type: "date" }),
+            defaultValue: event?.startDate?.split("T")[0]
           }}
           labelProps={{ children: "Start Date", htmlFor: fields.startDate.id }}
         />
@@ -223,9 +219,8 @@ export function EventEditor({
           className="grow"
           errors={fields.endDate.errors}
           inputProps={{
-            ...conform.input(fields.endDate),
-            defaultValue: event?.endDate?.split("T")[0],
-            type: "date"
+            ...getInputProps(fields.endDate, { type: "date" }),
+            defaultValue: event?.endDate?.split("T")[0]
           }}
           labelProps={{ children: "End Date", htmlFor: fields.endDate.id }}
         />
@@ -233,7 +228,7 @@ export function EventEditor({
       <Field
         errors={fields.location.errors}
         inputProps={{
-          ...conform.input(fields.location),
+          ...getInputProps(fields.location, { type: "text" }),
           defaultValue: event?.location
         }}
         labelProps={{ children: "Location", htmlFor: fields.location.id }}
@@ -243,9 +238,8 @@ export function EventEditor({
           className="grow"
           errors={fields.donationAmount.errors}
           inputProps={{
-            ...conform.input(fields.donationAmount),
-            defaultValue: event?.donationAmount || "3",
-            inputMode: "numeric"
+            ...getInputProps(fields.donationAmount, { type: "number" }),
+            defaultValue: event?.donationAmount || "3"
           }}
           labelProps={{
             children: "Donation Amount",
@@ -254,7 +248,7 @@ export function EventEditor({
         />
         <SelectField
           buttonProps={{
-            ...conform.input(fields.donationCurrency, { ariaAttributes: true }),
+            ...getInputProps(fields.donationCurrency, { type: "number" }),
             defaultValue: event?.donationCurrency ?? "usd"
           }}
           errors={fields.donationCurrency.errors}
@@ -271,7 +265,7 @@ export function EventEditor({
           className="grow"
           errors={fields.twitter.errors}
           inputProps={{
-            ...conform.input(fields.twitter),
+            ...getInputProps(fields.twitter, { type: "text" }),
             defaultValue: event?.twitter ?? undefined
           }}
           labelProps={{
@@ -309,7 +303,7 @@ export function EventEditor({
               value: "{{donationAmount}}"
             }
           ],
-          ...conform.textarea(fields.responseTemplate),
+          ...getTextareaProps(fields.responseTemplate),
           defaultValue:
             event?.responseTemplate ||
             "Thank you for helping us donate {{donationAmount}} to {{charity}} at {{event}}."
@@ -339,7 +333,7 @@ export function EventEditor({
               value: "{{donationAmount}}"
             }
           ],
-          ...conform.textarea(fields.tweetTemplate),
+          ...getTextareaProps(fields.tweetTemplate),
           defaultValue:
             event?.tweetTemplate ||
             `I just helped @${appConfig.company.twitter} donate {{donationAmount}} to {{charity}} at {{event}}.`
@@ -347,7 +341,7 @@ export function EventEditor({
       />
       <CheckboxField
         buttonProps={{
-          ...conform.input(fields.collectLeads),
+          ...getInputProps(fields.collectLeads, { type: "checkbox" }),
           defaultChecked: collectLeads,
           onCheckedChange: () => setCollectLeads(!collectLeads),
           required: false
@@ -366,7 +360,7 @@ export function EventEditor({
             htmlFor: fields.legalBlurb.id
           }}
           textareaProps={{
-            ...conform.textarea(fields.legalBlurb),
+            ...getTextareaProps(fields.legalBlurb),
             defaultValue: event?.legalBlurb ?? undefined
           }}
         />
