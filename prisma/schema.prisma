@@ -10,11 +10,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "../erd.md"
-}
-
 model User {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email     String    @unique
@@ -105,6 +100,7 @@ model Donation {
   Lead       Lead?
   Event      Event      @relation(fields: [eventId], references: [id])
   Charity    Charity    @relation(fields: [charityId], references: [id])
+  Survey     Survey?
 
   @@map("donations")
 }
@@ -122,6 +118,21 @@ model Lead {
   donationId String    @unique @map("donation_id") @db.Uuid
 
   @@map("leads")
+}
+
+model Survey {
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String
+  usingAI         String @map("using_ai")
+  companyAdoption String @map("company_adoption")
+  sdicUseAI       String @map("sdic_use_ai")
+  statementAgree  String @map("statement_agree")
+  toolEval        String @map("tool_eval")
+
+  Donation   Donation @relation(fields: [donationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  donationId String   @unique @map("donation_id") @db.Uuid
+
+  @@map("surveys")
 }
 
 model i18n {

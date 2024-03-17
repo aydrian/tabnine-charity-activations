@@ -20,11 +20,16 @@ const DonationWithLeads = z.object({
   charityId: z.string(),
   collectLeads: z.literal("true"),
   company: z.string({ required_error: "Company is required" }),
+  companyAdoption: z.string(),
   email: z.string({ required_error: "Company email is invalid" }),
   eventId: z.string(),
   firstName: z.string({ required_error: "First name is required" }),
   jobRole: z.string({ required_error: "Job title is required" }),
-  lastName: z.string({ required_error: "Last name is required" })
+  lastName: z.string({ required_error: "Last name is required" }),
+  sdicUseAI: z.string().array().optional(),
+  statementAgree: z.string(),
+  toolEval: z.string(),
+  usingAI: z.string()
 });
 
 const DonationWithoutLeads = z.object({
@@ -33,10 +38,10 @@ const DonationWithoutLeads = z.object({
   companyAdoption: z.string(),
   email: z.string({ required_error: "Company email is invalid" }),
   eventId: z.string(),
-  sdicUseAI: z.string(),
-  statementAgree: z.coerce.number(),
+  sdicUseAI: z.string().array().optional(),
+  statementAgree: z.string(),
   toolEval: z.string(),
-  usingAI: z.boolean()
+  usingAI: z.string()
 });
 
 const DonationFormSchema = z.discriminatedUnion("collectLeads", [
@@ -62,16 +67,39 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return json({ status: "success", submission } as const);
   }
 
-  const { charityId, collectLeads, eventId, ...leadData } = submission.value;
+  console.log({ values: submission.value });
+
+  const {
+    charityId,
+    collectLeads,
+    companyAdoption,
+    email,
+    eventId,
+    sdicUseAI,
+    statementAgree,
+    toolEval,
+    usingAI,
+    ...leadData
+  } = submission.value;
   console.log({ collectLeads, leadData });
-  const createLead = { Lead: { create: { ...leadData } } };
+  const createLead = { Lead: { create: { email, ...leadData } } };
 
   const donation = await prisma.donation.create({
     // @ts-ignore
     data: {
       charityId,
       eventId,
-      ...(collectLeads === "true" ? createLead : undefined)
+      ...(collectLeads === "true" ? createLead : undefined),
+      Survey: {
+        create: {
+          companyAdoption,
+          email,
+          sdicUseAI: sdicUseAI?.join(", ") ?? "",
+          statementAgree,
+          toolEval,
+          usingAI
+        }
+      }
     },
     select: { id: true }
   });
@@ -190,8 +218,8 @@ export function DonationForm({
           htmlFor: fields.usingAI.id
         }}
         options={[
-          { label: "Yes", value: "true" },
-          { label: "No", value: "false" }
+          { label: "Yes", value: "Yes" },
+          { label: "No", value: "No" }
         ]}
         radioGroupProps={{
           ...conform.input(fields.usingAI)

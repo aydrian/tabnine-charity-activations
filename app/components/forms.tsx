@@ -40,7 +40,7 @@ export function ErrorList({
   return (
     <ul className="flex flex-col gap-1" id={id}>
       {errorsToRender.map((e) => (
-        <li className="text-brand-danger text-[10px]" key={e}>
+        <li className="text-[10px] text-tabnine-red-500" key={e}>
           {e}
         </li>
       ))}
@@ -217,9 +217,10 @@ export function RadioGroupField({
         className="font-bold text-brand-deep-purple"
       />
       <RadioGroup
+        name={radioGroupProps.name}
         onBlur={control.blur}
         onFocus={control.focus}
-        onValueChange={control.change}
+        onValueChange={(e) => console.log(e)}
       >
         {options.map(({ label, value }, index) => (
           <div className="flex items-center space-x-2" key={value}>
@@ -248,11 +249,16 @@ export function CheckboxGroupField({
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
   options: { label: string; value: string }[];
 }) {
+  const shadowInputRef = useRef<HTMLInputElement>(null);
+  // const control = useInputEvent({
+  //   ref: shadowInputRef
+  // });
   const fallbackId = useId();
   const id = checkboxGroupProps.name ?? fallbackId;
   const errorId = errors?.length ? `${id}-error` : undefined;
   return (
     <div>
+      <input ref={shadowInputRef} type="hidden" {...checkboxGroupProps} />
       <Label
         htmlFor={id}
         {...labelProps}
@@ -261,7 +267,11 @@ export function CheckboxGroupField({
       <div className="grid gap-2">
         {options.map(({ label, value }, index) => (
           <div className="flex items-center space-x-2" key={value}>
-            <Checkbox id={`option-${index}`} value={value} />
+            <Checkbox
+              id={`option-${index}`}
+              name={checkboxGroupProps.name}
+              value={value}
+            />
             <Label htmlFor={`option-${index}`}>{label}</Label>
           </div>
         ))}
