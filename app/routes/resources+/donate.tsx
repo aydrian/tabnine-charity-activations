@@ -26,7 +26,7 @@ const DonationWithLeads = z.object({
   firstName: z.string({ required_error: "First name is required" }),
   jobRole: z.string({ required_error: "Job title is required" }),
   lastName: z.string({ required_error: "Last name is required" }),
-  sdicUseAI: z.string().array().optional(),
+  sdicUseAI: z.string().array().or(z.literal("")),
   statementAgree: z.string(),
   toolEval: z.string(),
   usingAI: z.string()
@@ -38,7 +38,7 @@ const DonationWithoutLeads = z.object({
   companyAdoption: z.string(),
   email: z.string({ required_error: "Company email is invalid" }),
   eventId: z.string(),
-  sdicUseAI: z.string().array().optional(),
+  sdicUseAI: z.string().array().or(z.literal("")),
   statementAgree: z.string(),
   toolEval: z.string(),
   usingAI: z.string()
@@ -94,7 +94,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         create: {
           companyAdoption,
           email,
-          sdicUseAI: sdicUseAI?.join(", ") ?? "",
+          sdicUseAI: (sdicUseAI || []).join(","),
           statementAgree,
           toolEval,
           usingAI
