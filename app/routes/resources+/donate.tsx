@@ -36,7 +36,7 @@ const DonationWithoutLeads = z.object({
   charityId: z.string(),
   collectLeads: z.literal("false"),
   companyAdoption: z.string(),
-  email: z.string({ required_error: "Company email is invalid" }),
+  email: z.string({ required_error: "Company email is invalid" }).optional(),
   eventId: z.string(),
   sdicUseAI: z.string().array().or(z.literal("")),
   statementAgree: z.string(),
@@ -93,7 +93,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       Survey: {
         create: {
           companyAdoption,
-          email,
+          email: email ?? "",
           sdicUseAI: (sdicUseAI || []).join(","),
           statementAgree,
           toolEval,
