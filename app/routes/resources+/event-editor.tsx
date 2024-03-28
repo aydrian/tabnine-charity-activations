@@ -98,7 +98,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
 
     const charitiesDelete = prisma.charitiesForEvents.deleteMany({
-      where: { charityId: { notIn: charities.map((c) => c.charityId) } }
+      where: {
+        AND: {
+          charityId: { notIn: charities.map((c) => c.charityId) },
+          eventId: id
+        }
+      }
     });
 
     const charityUpserts = charities.map((charity) => {
