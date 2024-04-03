@@ -6,6 +6,7 @@ npx prisma db push
 
 echo "🌱 Seeding the database using Prisma"
 npx prisma db seed
+npm run seed:translations
 
 echo "🚰 Creating the change feed"
 npx prisma db execute --file ./prisma/sql/set_cluster_settings.sql

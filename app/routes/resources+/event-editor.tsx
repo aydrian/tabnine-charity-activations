@@ -1,5 +1,10 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useForm
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { type ChangeEvent, useRef, useState } from "react";
@@ -29,9 +34,9 @@ const EventWithLeads = z.object({
     .max(4, "A max of 4 charities is allowed")
     .min(1, "At least 1 charity is required"),
   collectLeads: z.literal("on"),
-  donationAmount: z.coerce.number().default(3.0),
+  donationAmount: z.number().default(3.0),
   donationCurrency: z.string().default("usd"),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
+  endDate: z.date({ required_error: "End Date is required" }),
   id: z.string().optional(),
   legalBlurb: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
@@ -40,7 +45,7 @@ const EventWithLeads = z.object({
     required_error: "Response Template is required"
   }),
   slug: z.string({ required_error: "Slug is required" }),
-  startDate: z.coerce.date({ required_error: "Start Date is required" }),
+  startDate: z.date({ required_error: "Start Date is required" }),
   tweetTemplate: z.string({ required_error: "Tweet Template is required" }),
   twitter: z.string().optional()
 });
@@ -51,9 +56,9 @@ const EventWithoutLeads = z.object({
     .max(4, "A max of 4 charities is allowed")
     .min(1, "At least 1 charity is required"),
   collectLeads: z.undefined(),
-  donationAmount: z.coerce.number().default(3.0),
+  donationAmount: z.number().default(3.0),
   donationCurrency: z.string().default("usd"),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
+  endDate: z.date({ required_error: "End Date is required" }),
   id: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
   name: z.string({ required_error: "Name is required" }),
@@ -61,7 +66,7 @@ const EventWithoutLeads = z.object({
     required_error: "Response Template is required"
   }),
   slug: z.string({ required_error: "Slug is required" }),
-  startDate: z.coerce.date({ required_error: "Start Date is required" }),
+  startDate: z.date({ required_error: "Start Date is required" }),
   tweetTemplate: z.string({ required_error: "Tweet Template is required" }),
   twitter: z.string().optional()
 });
@@ -76,20 +81,17 @@ export const EventEditorSchema = z
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: EventEditorSchema
   });
-  if (!submission.value) {
+
+  if (submission.status !== "success") {
     return json(
+      { result: submission.reply() },
       {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
+        status: submission.status === "error" ? 400 : 200
+      }
     );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
   }
 
   const { charities, id, ...data } = submission.value;
@@ -169,13 +171,16 @@ export function EventEditor({
   const eventEditorFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(
+    constraint: getZodConstraint(
       collectLeads ? EventWithLeads : EventWithoutLeads
     ) as any,
+    defaultValue: {
+      donationCurrency: event?.donationCurrency ?? "usd"
+    },
     id: "event-editor",
-    lastSubmission: eventEditorFetcher.data?.submission,
+    lastResult: eventEditorFetcher.data?.result,
     onValidate({ formData }) {
-      return parse(formData, { schema: EventEditorSchema });
+      return parseWithZod(formData, { schema: EventEditorSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -191,14 +196,14 @@ export function EventEditor({
     <eventEditorFetcher.Form
       action="/resources/event-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="not-prose mb-8 flex flex-col sm:mb-4"
     >
       <input name="id" type="hidden" value={event?.id} />
       <Field
         errors={fields.name.errors}
         inputProps={{
-          ...conform.input(fields.name),
+          ...getInputProps(fields.name, { type: "text" }),
           defaultValue: event?.name,
           onBlur: handleOnChange
         }}
@@ -207,7 +212,7 @@ export function EventEditor({
       <Field
         errors={fields.slug.errors}
         inputProps={{
-          ...conform.input(fields.slug),
+          ...getInputProps(fields.slug, { type: "text" }),
           defaultValue: event?.slug
         }}
         labelProps={{ children: "Slug", htmlFor: fields.slug.id }}
@@ -218,9 +223,8 @@ export function EventEditor({
           className="grow"
           errors={fields.startDate.errors}
           inputProps={{
-            ...conform.input(fields.startDate),
-            defaultValue: event?.startDate?.split("T")[0],
-            type: "date"
+            ...getInputProps(fields.startDate, { type: "date" }),
+            defaultValue: event?.startDate?.split("T")[0]
           }}
           labelProps={{ children: "Start Date", htmlFor: fields.startDate.id }}
         />
@@ -228,9 +232,8 @@ export function EventEditor({
           className="grow"
           errors={fields.endDate.errors}
           inputProps={{
-            ...conform.input(fields.endDate),
-            defaultValue: event?.endDate?.split("T")[0],
-            type: "date"
+            ...getInputProps(fields.endDate, { type: "date" }),
+            defaultValue: event?.endDate?.split("T")[0]
           }}
           labelProps={{ children: "End Date", htmlFor: fields.endDate.id }}
         />
@@ -238,7 +241,7 @@ export function EventEditor({
       <Field
         errors={fields.location.errors}
         inputProps={{
-          ...conform.input(fields.location),
+          ...getInputProps(fields.location, { type: "text" }),
           defaultValue: event?.location
         }}
         labelProps={{ children: "Location", htmlFor: fields.location.id }}
@@ -248,9 +251,8 @@ export function EventEditor({
           className="grow"
           errors={fields.donationAmount.errors}
           inputProps={{
-            ...conform.input(fields.donationAmount),
-            defaultValue: event?.donationAmount || "3",
-            inputMode: "numeric"
+            ...getInputProps(fields.donationAmount, { type: "number" }),
+            defaultValue: event?.donationAmount || "3"
           }}
           labelProps={{
             children: "Donation Amount",
@@ -258,25 +260,22 @@ export function EventEditor({
           }}
         />
         <SelectField
-          buttonProps={{
-            ...conform.input(fields.donationCurrency, { ariaAttributes: true }),
-            defaultValue: event?.donationCurrency ?? "usd"
-          }}
           errors={fields.donationCurrency.errors}
           labelProps={{
             children: "Donation Currency",
             htmlFor: fields.donationCurrency.id
           }}
+          meta={fields.donationCurrency}
           options={[
-            { label: "usd", value: "usd" },
-            { label: "eur", value: "eur" }
+            { name: "usd", value: "usd" },
+            { name: "eur", value: "eur" }
           ]}
         />
         <Field
           className="grow"
           errors={fields.twitter.errors}
           inputProps={{
-            ...conform.input(fields.twitter),
+            ...getInputProps(fields.twitter, { type: "text" }),
             defaultValue: event?.twitter ?? undefined
           }}
           labelProps={{
@@ -314,7 +313,7 @@ export function EventEditor({
               value: "{{donationAmount}}"
             }
           ],
-          ...conform.textarea(fields.responseTemplate),
+          ...getTextareaProps(fields.responseTemplate),
           defaultValue:
             event?.responseTemplate ||
             "Thank you for helping us donate {{donationAmount}} to {{charity}} at {{event}}."
@@ -344,7 +343,7 @@ export function EventEditor({
               value: "{{donationAmount}}"
             }
           ],
-          ...conform.textarea(fields.tweetTemplate),
+          ...getTextareaProps(fields.tweetTemplate),
           defaultValue:
             event?.tweetTemplate ||
             `I just helped @${appConfig.company.twitter} donate {{donationAmount}} to {{charity}} at {{event}}.`
@@ -352,7 +351,7 @@ export function EventEditor({
       />
       <CheckboxField
         buttonProps={{
-          ...conform.input(fields.collectLeads),
+          ...getInputProps(fields.collectLeads, { type: "checkbox" }),
           defaultChecked: collectLeads,
           onCheckedChange: () => setCollectLeads(!collectLeads),
           required: false
@@ -371,7 +370,7 @@ export function EventEditor({
             htmlFor: fields.legalBlurb.id
           }}
           textareaProps={{
-            ...conform.textarea(fields.legalBlurb),
+            ...getTextareaProps(fields.legalBlurb),
             defaultValue: event?.legalBlurb ?? undefined
           }}
         />
