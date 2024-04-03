@@ -39,8 +39,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const submission = parseWithZod(formData, {
     schema: CharityEditorSchema
   });
-  if (submission.status === "error") {
-    return json(submission.reply(), { status: 400 });
+
+  if (submission.status !== "success") {
+    return json(
+      { result: submission.reply() },
+      {
+        status: submission.status === "error" ? 400 : 200
+      }
+    );
   }
 
   const { id, ...data } = submission.value;
@@ -80,7 +86,7 @@ export function CharityEditor({
   const [form, fields] = useForm({
     constraint: getZodConstraint(CharityEditorSchema),
     id: "charity-editor",
-    lastResult: charityEditorFetcher.data?.submission,
+    lastResult: charityEditorFetcher.data?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: CharityEditorSchema });
     },

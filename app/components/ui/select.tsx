@@ -4,11 +4,6 @@ import * as React from "react";
 import { Icon } from "~/components/icon.tsx";
 import { cn } from "~/utils/misc.ts";
 
-export type SelectProps = Omit<
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
-  "type"
-> & { type?: string };
-
 const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;

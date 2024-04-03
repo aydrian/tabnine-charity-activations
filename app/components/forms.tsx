@@ -1,6 +1,6 @@
-import { useInputControl } from "@conform-to/react";
+import { type FieldMetadata, useInputControl } from "@conform-to/react";
 import { clsx } from "clsx";
-import React, { useId, useRef } from "react";
+import React, { type ComponentProps, useId } from "react";
 
 import {
   TemplateEditor,
@@ -10,7 +10,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  type SelectProps,
   SelectTrigger,
   SelectValue
 } from "~/components/ui/select.tsx";
@@ -192,40 +191,38 @@ export function RadioGroupField({
   className,
   errors,
   labelProps,
+  meta,
   options,
   radioGroupProps
 }: {
   className?: string;
   errors?: ListOfErrors;
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
-  options: { label: string; value: string }[];
+  meta: FieldMetadata<string>;
+  options: { name: string; value: string }[];
   radioGroupProps: RadioGroupProps;
 }) {
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef
-  });
+  const control = useInputControl(meta);
   const fallbackId = useId();
-  const id = radioGroupProps.name ?? fallbackId;
+  const id = meta.name ?? fallbackId;
   const errorId = errors?.length ? `${id}-error` : undefined;
   return (
-    <div>
-      <input ref={shadowInputRef} type="hidden" {...radioGroupProps} />
+    <div className={className}>
       <Label
         htmlFor={id}
         {...labelProps}
         className="font-bold text-brand-deep-purple"
       />
       <RadioGroup
-        name={radioGroupProps.name}
+        name={meta.name}
         onBlur={control.blur}
-        onFocus={control.focus}
-        onValueChange={(e) => console.log(e)}
+        onValueChange={control.change}
+        value={control.value ?? ""}
       >
-        {options.map(({ label, value }, index) => (
+        {options.map(({ name, value }) => (
           <div className="flex items-center space-x-2" key={value}>
-            <RadioGroupItem id={`option-${index}`} value={value} />
-            <Label htmlFor={`option-${index}`}>{label}</Label>
+            <RadioGroupItem id={`${meta.id}-${value}`} value={value} />
+            <Label htmlFor={`${meta.id}-${value}`}>{name}</Label>
           </div>
         ))}
       </RadioGroup>
@@ -237,42 +234,42 @@ export function RadioGroupField({
 }
 
 export function CheckboxGroupField({
-  checkboxGroupProps,
   className,
   errors,
   labelProps,
+  meta,
   options
 }: {
-  checkboxGroupProps: any;
   className?: string;
   errors?: ListOfErrors;
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
-  options: { label: string; value: string }[];
+  meta: FieldMetadata<"" | string[]>;
+  options: Array<{ name: string; value: string }>;
 }) {
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  // const control = useInputEvent({
-  //   ref: shadowInputRef
-  // });
   const fallbackId = useId();
-  const id = checkboxGroupProps.name ?? fallbackId;
+  const id = meta.name ?? fallbackId;
   const errorId = errors?.length ? `${id}-error` : undefined;
   return (
-    <div>
-      <input ref={shadowInputRef} type="hidden" {...checkboxGroupProps} />
+    <div className={className}>
       <Label
         htmlFor={id}
         {...labelProps}
         className="font-bold text-brand-deep-purple"
       />
       <div className="grid gap-2">
-        {options.map(({ label, value }, index) => (
+        {options.map(({ name, value }, index) => (
           <div className="flex items-center space-x-2" key={value}>
             <Checkbox
-              id={`option-${index}`}
-              name={checkboxGroupProps.name}
+              defaultChecked={
+                meta.initialValue && Array.isArray(meta.initialValue)
+                  ? meta.initialValue.includes(value)
+                  : meta.initialValue === value
+              }
+              id={`${meta.id}-${value}`}
+              name={meta.name}
               value={value}
             />
-            <Label htmlFor={`option-${index}`}>{label}</Label>
+            <Label htmlFor={`${meta.id}-${value}`}>{name}</Label>
           </div>
         ))}
       </div>
@@ -284,29 +281,23 @@ export function CheckboxGroupField({
 }
 
 export function SelectField({
-  buttonProps,
   className,
   errors,
   labelProps,
-  options
+  meta,
+  options,
+  ...selectProps
 }: {
-  buttonProps: SelectProps;
   className?: string;
   errors?: ListOfErrors;
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
-  options: { label: string; value: string }[];
-}) {
-  const [open, setOpen] = React.useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const control = useInputEvent({
-    onFocus: () => buttonRef.current?.focus(),
-    ref: () =>
-      buttonRef.current?.form?.elements.namedItem(buttonProps.name ?? "")
-  });
+  meta: FieldMetadata<string>;
+  options: Array<{ name: string; value: string }>;
+} & ComponentProps<typeof Select>) {
+  const control = useInputControl(meta);
   const fallbackId = useId();
-  const id = buttonProps.name ?? fallbackId;
+  const id = meta.name ?? fallbackId;
   const errorId = errors?.length ? `${id}-error` : undefined;
-  const { name, ...props } = buttonProps;
 
   return (
     <div className={clsx("flex flex-col gap-1", className)}>
@@ -316,41 +307,23 @@ export function SelectField({
         className="font-bold text-brand-deep-purple"
       />
       <Select
-        defaultValue={
-          buttonProps.defaultValue
-            ? String(buttonProps.defaultValue)
-            : undefined
-        }
-        name={name}
-        onOpenChange={setOpen}
-        open={open}
+        {...selectProps}
+        name={meta.name}
+        onOpenChange={(open) => {
+          if (!open) control.blur();
+        }}
+        onValueChange={(value) => {
+          control.change(value);
+        }}
+        value={control.value ?? meta.initialValue}
       >
-        <SelectTrigger
-          aria-describedby={errorId}
-          aria-invalid={errorId ? true : undefined}
-          id={id}
-          ref={buttonRef}
-          {...props}
-          onBlur={(event) => {
-            control.blur();
-            buttonProps.onBlur?.(event);
-          }}
-          onChange={(state) => {
-            control.change(state.currentTarget.value);
-            buttonProps.onChange?.(state);
-          }}
-          onFocus={(event) => {
-            control.focus();
-            buttonProps.onFocus?.(event);
-          }}
-          type="button"
-        >
+        <SelectTrigger id={id}>
           <SelectValue placeholder={labelProps.children} />
         </SelectTrigger>
         <SelectContent>
-          {options.map(({ label, value }) => (
+          {options.map(({ name, value }) => (
             <SelectItem key={value} value={value}>
-              {label}
+              {name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -368,24 +341,27 @@ export function CheckboxField({
   errors,
   labelProps
 }: {
-  buttonProps: CheckboxProps;
+  buttonProps: CheckboxProps & {
+    form: string;
+    name: string;
+    value?: string;
+  };
   className?: string;
   errors?: ListOfErrors;
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
 }) {
+  const { defaultChecked, key, ...checkboxProps } = buttonProps;
   const fallbackId = useId();
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  // To emulate native events that Conform listen to:
-  // See https://conform.guide/integrations
-  const control = useInputEvent({
-    // Retrieve the checkbox element by name instead as Radix does not expose the internal checkbox element
-    onFocus: () => buttonRef.current?.focus(),
-    // See https://github.com/radix-ui/primitives/discussions/874
-    ref: () =>
-      buttonRef.current?.form?.elements.namedItem(buttonProps.name ?? "")
+  const checkedValue = buttonProps.value ?? "on";
+  const input = useInputControl({
+    formId: buttonProps.form,
+    initialValue: defaultChecked ? checkedValue : undefined,
+    key,
+    name: buttonProps.name
   });
-  const id = buttonProps.id ?? buttonProps.name ?? fallbackId;
+  const id = buttonProps.id ?? fallbackId;
   const errorId = errors?.length ? `${id}-error` : undefined;
+
   return (
     <div className={className}>
       <div className="flex gap-2">
@@ -395,21 +371,21 @@ export function CheckboxField({
           {...labelProps}
         />
         <Checkbox
+          {...checkboxProps}
           aria-describedby={errorId}
           aria-invalid={errorId ? true : undefined}
+          checked={input.value === checkedValue}
           id={id}
-          ref={buttonRef}
-          {...buttonProps}
           onBlur={(event) => {
-            control.blur();
+            input.blur();
             buttonProps.onBlur?.(event);
           }}
           onCheckedChange={(state) => {
-            control.change(Boolean(state.valueOf()));
+            input.change(state.valueOf() ? checkedValue : "");
             buttonProps.onCheckedChange?.(state);
           }}
           onFocus={(event) => {
-            control.focus();
+            input.focus();
             buttonProps.onFocus?.(event);
           }}
           type="button"

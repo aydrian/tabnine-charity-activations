@@ -59,8 +59,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const submission = parseWithZod(formData, {
     schema: DonationFormSchema
   });
-  if (submission.status === "error") {
-    return json(submission.reply(), { status: 400 });
+
+  if (submission.status !== "success") {
+    return json(
+      { result: submission.reply() },
+      {
+        status: submission.status === "error" ? 400 : 200
+      }
+    );
   }
 
   console.log({ values: submission.value });
@@ -129,7 +135,7 @@ export function DonationForm({
       eventId: event.id
     },
     id: "donation-form",
-    lastResult: donationFormFetcher.data,
+    lastResult: donationFormFetcher.data?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: DonationFormSchema });
     },
@@ -211,13 +217,12 @@ export function DonationForm({
             "As an individual, are you currently using AI in your software development processes?",
           htmlFor: fields.usingAI.id
         }}
+        meta={fields.usingAI}
         options={[
-          { label: "Yes", value: "Yes" },
-          { label: "No", value: "No" }
+          { name: "Yes", value: "Yes" },
+          { name: "No", value: "No" }
         ]}
-        radioGroupProps={{
-          ...getInputProps(fields.usingAI, { type: "text" })
-        }}
+        radioGroupProps={{}}
       />
       <RadioGroupField
         errors={fields.companyAdoption.errors}
@@ -226,47 +231,43 @@ export function DonationForm({
             "Are you currently using AI in your software development processes?",
           htmlFor: fields.companyAdoption.id
         }}
+        meta={fields.companyAdoption}
         options={[
-          { label: "Not yet evaluating", value: "Not yet evaluating" },
+          { name: "Not yet evaluating", value: "Not yet evaluating" },
           {
-            label: "Plan to evaluate in the next 6 months",
+            name: "Plan to evaluate in the next 6 months",
             value: "Plan to evaluate in the next 6 months"
           },
-          { label: "Currently Evaluating", value: "Currently Evaluating" },
+          { name: "Currently Evaluating", value: "Currently Evaluating" },
           {
-            label: "Have one or more tools in use within our company",
+            name: "Have one or more tools in use within our company",
             value: "Have one or more tools in use within our company"
           },
           {
-            label:
-              "Broad adoption of one or more tools across our organization",
+            name: "Broad adoption of one or more tools across our organization",
             value: "Broad adoption of one or more tools across our organization"
           }
         ]}
-        radioGroupProps={{
-          ...getInputProps(fields.companyAdoption, { type: "text" })
-        }}
+        radioGroupProps={{}}
       />
       <CheckboxGroupField
-        checkboxGroupProps={{
-          ...getInputProps(fields.sdicUseAI, { type: "text" })
-        }}
         errors={fields.sdicUseAI.errors}
         labelProps={{
           children: `In what parts of the software development lifecycle are AI tools in use today?`,
           htmlFor: fields.sdicUseAI.id
         }}
+        meta={fields.sdicUseAI}
         options={[
           {
-            label: "Planning / architecture",
+            name: "Planning / architecture",
             value: "Planning / architecture"
           },
-          { label: "Code generation", value: "Code generation" },
-          { label: "Documentation", value: "Documentation" },
-          { label: "Testing", value: "Testing" },
-          { label: "Security", value: "Security" },
-          { label: "Deployment / DevOps", value: "Deployment / DevOps" },
-          { label: "Maintenance / Bug Fixes", value: "Maintenance / Bug Fixes" }
+          { name: "Code generation", value: "Code generation" },
+          { name: "Documentation", value: "Documentation" },
+          { name: "Testing", value: "Testing" },
+          { name: "Security", value: "Security" },
+          { name: "Deployment / DevOps", value: "Deployment / DevOps" },
+          { name: "Maintenance / Bug Fixes", value: "Maintenance / Bug Fixes" }
         ]}
       />
       <RadioGroupField
@@ -275,21 +276,20 @@ export function DonationForm({
           children: `How much do you agree with this statement, “AI tools add value to the software development process today”?`,
           htmlFor: fields.statementAgree.id
         }}
+        meta={fields.statementAgree}
         options={[
-          { label: "1 - strongly disagree ", value: "1" },
-          { label: "2", value: "2" },
-          { label: "3", value: "3" },
-          { label: "4", value: "4" },
-          { label: "5", value: "5" },
-          { label: "6", value: "6" },
-          { label: "7", value: "7" },
-          { label: "8", value: "8" },
-          { label: "9", value: "9" },
-          { label: "10 - strongly agree", value: "10" }
+          { name: "1 - strongly disagree ", value: "1" },
+          { name: "2", value: "2" },
+          { name: "3", value: "3" },
+          { name: "4", value: "4" },
+          { name: "5", value: "5" },
+          { name: "6", value: "6" },
+          { name: "7", value: "7" },
+          { name: "8", value: "8" },
+          { name: "9", value: "9" },
+          { name: "10 - strongly agree", value: "10" }
         ]}
-        radioGroupProps={{
-          ...getInputProps(fields.statementAgree, { type: "text" })
-        }}
+        radioGroupProps={{}}
       />
       <TextareaField
         errors={fields.toolEval.errors}

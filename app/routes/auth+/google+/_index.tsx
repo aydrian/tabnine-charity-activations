@@ -1,7 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import type { ButtonHTMLAttributes } from "react";
 
-import { useForm } from "@conform-to/react";
+import { getFormProps, useForm } from "@conform-to/react";
 import { redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { clsx } from "clsx";
@@ -20,7 +20,7 @@ export function GoogleLoginForm({ className }: { className?: string }) {
 
   const [form] = useForm({
     id: "google-login-form",
-    lastSubmission: fetcher.data?.submission
+    lastResult: fetcher.data?.result
   });
 
   return (
@@ -28,7 +28,7 @@ export function GoogleLoginForm({ className }: { className?: string }) {
       action="/auth/google"
       className={className}
       method="POST"
-      {...form.props}
+      {...getFormProps(form)}
     >
       <GoogleLoginButton className="mt-4" state={fetcher.state} />
     </fetcher.Form>

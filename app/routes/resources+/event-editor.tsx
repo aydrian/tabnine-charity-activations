@@ -34,9 +34,9 @@ const EventWithLeads = z.object({
     .max(4, "A max of 4 charities is allowed")
     .min(1, "At least 1 charity is required"),
   collectLeads: z.literal("on"),
-  donationAmount: z.coerce.number().default(3.0),
+  donationAmount: z.number().default(3.0),
   donationCurrency: z.string().default("usd"),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
+  endDate: z.date({ required_error: "End Date is required" }),
   id: z.string().optional(),
   legalBlurb: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
@@ -45,7 +45,7 @@ const EventWithLeads = z.object({
     required_error: "Response Template is required"
   }),
   slug: z.string({ required_error: "Slug is required" }),
-  startDate: z.coerce.date({ required_error: "Start Date is required" }),
+  startDate: z.date({ required_error: "Start Date is required" }),
   tweetTemplate: z.string({ required_error: "Tweet Template is required" }),
   twitter: z.string().optional()
 });
@@ -56,9 +56,9 @@ const EventWithoutLeads = z.object({
     .max(4, "A max of 4 charities is allowed")
     .min(1, "At least 1 charity is required"),
   collectLeads: z.undefined(),
-  donationAmount: z.coerce.number().default(3.0),
+  donationAmount: z.number().default(3.0),
   donationCurrency: z.string().default("usd"),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
+  endDate: z.date({ required_error: "End Date is required" }),
   id: z.string().optional(),
   location: z.string({ required_error: "Location is required" }),
   name: z.string({ required_error: "Name is required" }),
@@ -66,7 +66,7 @@ const EventWithoutLeads = z.object({
     required_error: "Response Template is required"
   }),
   slug: z.string({ required_error: "Slug is required" }),
-  startDate: z.coerce.date({ required_error: "Start Date is required" }),
+  startDate: z.date({ required_error: "Start Date is required" }),
   tweetTemplate: z.string({ required_error: "Tweet Template is required" }),
   twitter: z.string().optional()
 });
@@ -85,8 +85,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     schema: EventEditorSchema
   });
 
-  if (submission.status === "error") {
-    return json(submission.reply(), { status: 400 });
+  if (submission.status !== "success") {
+    return json(
+      { result: submission.reply() },
+      {
+        status: submission.status === "error" ? 400 : 200
+      }
+    );
   }
 
   const { charities, id, ...data } = submission.value;
@@ -169,8 +174,11 @@ export function EventEditor({
     constraint: getZodConstraint(
       collectLeads ? EventWithLeads : EventWithoutLeads
     ) as any,
+    defaultValue: {
+      donationCurrency: event?.donationCurrency ?? "usd"
+    },
     id: "event-editor",
-    lastResult: eventEditorFetcher.data,
+    lastResult: eventEditorFetcher.data?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: EventEditorSchema });
     },
@@ -252,18 +260,15 @@ export function EventEditor({
           }}
         />
         <SelectField
-          buttonProps={{
-            ...getInputProps(fields.donationCurrency, { type: "number" }),
-            defaultValue: event?.donationCurrency ?? "usd"
-          }}
           errors={fields.donationCurrency.errors}
           labelProps={{
             children: "Donation Currency",
             htmlFor: fields.donationCurrency.id
           }}
+          meta={fields.donationCurrency}
           options={[
-            { label: "usd", value: "usd" },
-            { label: "eur", value: "eur" }
+            { name: "usd", value: "usd" },
+            { name: "eur", value: "eur" }
           ]}
         />
         <Field

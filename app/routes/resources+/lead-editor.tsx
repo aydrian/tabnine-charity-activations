@@ -27,8 +27,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     schema: LeadEditorSchema
   });
 
-  if (submission.status === "error") {
-    return json(submission.reply(), { status: 400 });
+  if (submission.status !== "success") {
+    return json(
+      { result: submission.reply() },
+      {
+        status: submission.status === "error" ? 400 : 200
+      }
+    );
   }
 
   const { id, notes, score } = submission.value;
@@ -46,7 +51,7 @@ export function LeadEditor({ lead }: { lead: LeadType }) {
   const [form, fields] = useForm({
     constraint: getZodConstraint(LeadEditorSchema),
     id: "lead-editor",
-    lastResult: leadEditorFetcher.data,
+    lastResult: leadEditorFetcher.data?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LeadEditorSchema });
     },
