@@ -14,10 +14,10 @@ type AppConfig = {
 export default {
   charity: {
     colors: [
-      { hex: "#f433ff", name: "pink" },
-      { hex: "#ff5b00", name: "orange" },
-      { hex: "#0165fc", name: "blue" },
-      { hex: "#fff917", name: "yellow" }
+      { hex: "#1f46c1", name: "bright blue" },
+      { hex: "#ff2210", name: "bright red" },
+      { hex: "#9465ec", name: "dev purple" },
+      { hex: "#2ad5e7", name: "highlight" }
     ],
     maxPerEvent: 4
   },

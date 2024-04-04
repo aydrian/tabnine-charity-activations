@@ -98,22 +98,22 @@ async function seed() {
     data: [
       {
         charityId: "57671ca8-1772-4b05-af47-564577a8e8b5",
-        color: "#f433ff",
+        color: "#1f46c1",
         eventId: event.id
       },
       {
         charityId: "73c41cc0-a6d3-43ae-8cda-2015e12345c8",
-        color: "#ff5b00",
+        color: "#ff2210",
         eventId: event.id
       },
       {
         charityId: "d88bf1e9-5039-4489-9e78-cde32ae238c9",
-        color: "#0165fc",
+        color: "#9465ec",
         eventId: event.id
       },
       {
         charityId: "fa57f748-d67f-426a-ab22-a1aba01ea80d",
-        color: "#fff917",
+        color: "#2ad5e7",
         eventId: event.id
       }
     ]

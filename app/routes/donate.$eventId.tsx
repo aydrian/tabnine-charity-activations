@@ -8,6 +8,7 @@ import {
 } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
+import CompanyLogo from "~/components/company-logo.tsx";
 import Footer from "~/components/footer.tsx";
 import { DonationForm } from "~/routes/resources+/donate.tsx";
 import { prisma } from "~/utils/db.server.ts";
@@ -54,12 +55,15 @@ export default function EventDonate() {
   }).format(Number(event.donationAmount));
   return (
     <>
-      <main className="prose min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover px-4 pb-8 pt-8">
+      <main className="min-h-screen max-w-full bg-tabnine-deep-navy bg-[url('/assets/bg-bars.svg')] bg-contain bg-left-bottom bg-no-repeat px-4 pb-8 pt-8">
         <section className="mx-auto max-w-4xl">
-          <h1 className="font-inter mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
-            {event.name}
-          </h1>
-          <p className="text-center text-white">
+          <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+            <CompanyLogo className="inline-block w-[272px]" />
+            <h1 className="font-inter text-5xl font-extrabold !leading-tight text-tabnine-bright-red">
+              at {event.name}
+            </h1>
+          </div>
+          <p className="p-4 text-center text-white">
             {t("donate-instructions", { amount })}
           </p>
           <div className="border-brand-gray-b rounded border bg-white p-4 sm:px-16">
