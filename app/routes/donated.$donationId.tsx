@@ -9,6 +9,7 @@ import {
 import handlebars from "handlebars";
 import { useTranslation } from "react-i18next";
 
+import CompanyLogo from "~/components/company-logo.tsx";
 import Footer from "~/components/footer.tsx";
 import TweetButton from "~/components/tweet-button.tsx";
 import { prisma } from "~/utils/db.server.ts";
@@ -72,11 +73,14 @@ export default function DonateConfirm() {
   const { donation, responseHtml, tweetText } = useLoaderData<typeof loader>();
   return (
     <>
-      <main className="prose min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover px-4 pb-8 pt-8">
+      <main className="min-h-screen max-w-full bg-tabnine-deep-navy bg-[url('/assets/bg-bars.svg')]  bg-contain bg-left-bottom  bg-no-repeat px-4 pb-8 pt-8">
         <section className="mx-auto max-w-4xl">
-          <h1 className="font-inter mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
-            {donation.Event.name}
-          </h1>
+          <div className="flex flex-col flex-wrap items-center justify-center gap-2 p-2 md:flex-row">
+            <CompanyLogo className="inline-block w-[272px]" />
+            <h1 className="font-inter text-5xl font-extrabold !leading-tight text-tabnine-bright-red">
+              at {donation.Event.name}
+            </h1>
+          </div>
           <div className="border-brand-gray-b rounded border bg-white p-4 sm:px-16">
             <div
               dangerouslySetInnerHTML={{

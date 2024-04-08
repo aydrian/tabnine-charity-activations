@@ -2,6 +2,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import {
+  Link,
   isRouteErrorResponse,
   useLoaderData,
   useRouteError
@@ -19,8 +20,9 @@ import React from "react";
 import { Bar } from "react-chartjs-2";
 import { useEventSource } from "remix-utils/sse/react";
 
-import appConfig from "~/app.config.ts";
+import CompanyLogo from "~/components/company-logo.tsx";
 import { Icon } from "~/components/icon.tsx";
+import { Button } from "~/components/ui/button.tsx";
 import { getDashboardCharities } from "~/models/charity.server.ts";
 import { prisma } from "~/utils/db.server.ts";
 import { hexToRgbA } from "~/utils/misc.ts";
@@ -79,122 +81,135 @@ export default function EventDashboard() {
   });
 
   return (
-    <main className="min-h-screen max-w-full bg-brand-deep-purple bg-[url('/assets/bg.svg')] bg-cover p-4">
-      <section className="prose mx-auto grid max-w-7xl">
-        <h1 className="font-inter mb-0 bg-gradient-to-r from-brand-iridescent-blue to-brand-electric-purple bg-clip-text text-center text-5xl font-bold !leading-tight text-transparent sm:text-7xl">
-          {appConfig.company.name} at {event.name}
-        </h1>
-        <div className="flex flex-col justify-stretch gap-4">
-          <div className="flex grow gap-4">
-            <div className="border-brand-gray-b grow rounded border bg-white p-2">
-              <Bar
-                data={{
-                  datasets: [
-                    {
-                      backgroundColor: charities.map((charity) =>
-                        hexToRgbA(charity.color, 0.5)
-                      ),
-                      borderColor: charities.map((charity) => charity.color),
-                      borderWidth: 1,
-                      data: charities.map((charity) => charity.count),
-                      label: "total donations"
-                    }
-                  ],
-                  labels: charities.map((charity) => charity.name)
-                }}
-                options={{
-                  responsive: true,
-                  scales: { y: { ticks: { stepSize: 1 } } }
-                }}
+    <div className="flex h-screen w-full flex-col gap-6 bg-tabnine-deep-navy bg-[url('/assets/bg-bars.svg')] bg-contain bg-left-bottom bg-no-repeat p-12">
+      <header className="flex items-center justify-between">
+        <div className="flex gap-2">
+          <CompanyLogo className="inline-block w-[272px]" />
+          <h1 className="font-inter text-5xl font-extrabold !leading-tight text-tabnine-bright-red">
+            at {event.name}
+          </h1>
+        </div>
+        <Button
+          asChild
+          className="bg-tabnine-bright-red font-roboto-mono text-2xl hover:bg-tabnine-red-400"
+        >
+          <Link target="_blank" to="./sign-up">
+            sign up for Tabnine Pro
+          </Link>
+        </Button>
+      </header>
+      <main className="flex grow gap-4">
+        <div className="border-brand-gray-b grow rounded border bg-white p-2">
+          <Bar
+            data={{
+              datasets: [
+                {
+                  backgroundColor: charities.map((charity) =>
+                    hexToRgbA(charity.color, 1)
+                  ),
+                  borderColor: charities.map((charity) => charity.color),
+                  borderWidth: 1,
+                  data: charities.map((charity) => charity.count),
+                  label: "total donations"
+                }
+              ],
+              labels: charities.map((charity) => charity.name)
+            }}
+            options={{
+              responsive: true,
+              scales: { y: { ticks: { stepSize: 1 } } }
+            }}
+          />
+        </div>
+        <div className="flex min-w-max flex-col justify-evenly gap-4 text-center">
+          <div className="flex flex-col items-center justify-center gap-2 p-2">
+            <div className="flex items-center justify-center p-2">
+              <Icon
+                className="h-12 w-12 text-tabnine-bright-blue"
+                name="curley-brace"
+              />
+              <Icon
+                className="aspect-square h-12 text-tabnine-bright-red"
+                name="gift"
+              />
+              <Icon
+                className="h-12 w-12 rotate-180 text-tabnine-bright-blue"
+                name="curley-brace"
               />
             </div>
-            <div className="flex shrink flex-col justify-stretch gap-4 text-center">
-              <div className="border-brand-gray-b flex grow flex-col items-center justify-center rounded border bg-white p-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-electric-purple p-2">
-                  <Icon
-                    className="aspect-square h-full text-gray-100"
-                    name="gift-outline"
-                  />
-                </div>
-                <div className="text-3xl font-extrabold">
-                  {charities.reduce((acc, cur) => acc + cur.count, 0)}
-                </div>
-                <div className="text-semibold text-sm uppercase text-gray-700">
-                  Total Donations
-                </div>
-              </div>
-              <div className="border-brand-gray-b flex grow flex-col items-center justify-center gap-1 rounded border bg-white p-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-iridescent-blue p-2">
-                  <Icon
-                    className="aspect-square h-full text-gray-600"
-                    name="banknotes-outline"
-                  />
-                </div>
-                <div className="text-3xl font-extrabold">
-                  {Currency.format(
-                    charities.reduce(
-                      (acc, cur) =>
-                        acc + cur.count * Number(event.donationAmount),
-                      0
-                    )
-                  )}
-                </div>
-                <div className="text-semibold text-sm uppercase text-gray-700">
-                  Total Donated
-                </div>
-              </div>
-              <div className="border-brand-gray-b flex grow flex-col items-center justify-center gap-1 rounded border bg-white p-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1da1f2] p-2">
-                  <Icon
-                    className="aspect-square h-full text-white"
-                    name="twitter"
-                  />
-                </div>
-                <div className="font-extrabold">
-                  @{appConfig.company.twitter}
-                </div>
-              </div>
+            <div className="font-inter text-7xl font-extrabold text-white">
+              {charities.reduce((acc, cur) => acc + cur.count, 0)}
+            </div>
+            <div className="text-semibold font-roboto-mono  text-xl text-tabnine-dev-purple">
+              Total donation
             </div>
           </div>
-          <div className="border-brand-gray-b flex shrink gap-4 rounded border bg-white p-2">
-            <a
-              className="flex grow justify-center"
-              href={donateLink}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <img
-                alt="Scan me"
-                className="my-0 aspect-square h-full"
-                src={qrcode}
+          <div className="flex flex-col items-center justify-center gap-2 p-2">
+            <div className="flex shrink justify-center p-2">
+              <Icon
+                className="inline-block h-12 w-12 text-tabnine-bright-blue"
+                name="curley-brace"
               />
-            </a>
-            <div className="flex shrink flex-col justify-center gap-4">
-              <h2 className="my-0 text-brand-deep-purple">
-                Scan the QR Code and we'll donate{" "}
-                {Currency.format(Number(event.donationAmount))} to your choice
-                of the following charities:
-              </h2>
-              <div className="flex items-center justify-around">
-                {charities.map((charity) => (
-                  <React.Fragment key={charity.charity_id}>
-                    {charity.logoSVG ? (
-                      <img
-                        alt={charity.name}
-                        className="h-12 text-brand-deep-purple"
-                        src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                          charity.logoSVG
-                        )}`}
-                      />
-                    ) : null}
-                  </React.Fragment>
-                ))}
-              </div>
+              <Icon
+                className="aspect-square h-12 text-tabnine-bright-red"
+                name="piggy-bank"
+              />
+              <Icon
+                className="h-12 w-12 rotate-180 text-tabnine-bright-blue"
+                name="curley-brace"
+              />
+            </div>
+            <div className="font-inter text-7xl font-extrabold text-white">
+              {Currency.format(
+                charities.reduce(
+                  (acc, cur) => acc + cur.count * Number(event.donationAmount),
+                  0
+                )
+              )}
+            </div>
+            <div className="text-semibold font-roboto-mono text-xl text-tabnine-dev-purple">
+              Total donated
             </div>
           </div>
         </div>
-      </section>
-    </main>
+      </main>
+      <footer className="flex gap-4 rounded border bg-white p-4">
+        <div className="flex items-center justify-center">
+          <h2 className="font-inter text-4xl font-bold text-tabnine-deep-navy">
+            Scan the QR Code and we'll{" "}
+            <span className="text-tabnine-bright-blue">
+              donate {Currency.format(Number(event.donationAmount))} to your
+              choice
+            </span>{" "}
+            of the following charities:
+          </h2>
+        </div>
+        <div className="flex w-52 items-center justify-center">
+          <a href={donateLink} rel="noreferrer" target="_blank">
+            <img
+              alt="Scan me"
+              className="h-46 w-46 my-0 aspect-square rounded-2xl border-2 border-dashed border-tabnine-bright-red"
+              src={qrcode}
+            />
+          </a>
+        </div>
+        <div className="flex flex-wrap items-center justify-around gap-4">
+          {charities.map((charity) => (
+            <React.Fragment key={charity.charity_id}>
+              {charity.logoSVG ? (
+                <img
+                  alt={charity.name}
+                  className="h-14 text-tabnine-deep-navy"
+                  src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                    charity.logoSVG
+                  )}`}
+                />
+              ) : null}
+            </React.Fragment>
+          ))}
+        </div>
+      </footer>
+    </div>
   );
 }
 
