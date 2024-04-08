@@ -2,6 +2,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import {
+  Link,
   isRouteErrorResponse,
   useLoaderData,
   useRouteError
@@ -88,8 +89,13 @@ export default function EventDashboard() {
             at {event.name}
           </h1>
         </div>
-        <Button className="bg-tabnine-bright-red font-roboto-mono text-2xl hover:bg-tabnine-red-400">
-          sign up for Tabnine Pro
+        <Button
+          asChild
+          className="bg-tabnine-bright-red font-roboto-mono text-2xl hover:bg-tabnine-red-400"
+        >
+          <Link target="_blank" to="./sign-up">
+            sign up for Tabnine Pro
+          </Link>
         </Button>
       </header>
       <main className="flex grow gap-4">
